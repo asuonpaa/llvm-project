@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 /// ForwardIterator for the bits that are set.
@@ -558,8 +558,8 @@ public:
     unsigned RHSWords  = NumBitWords(RHS.size());
     unsigned i;
     for (i = 0; i != std::min(ThisWords, RHSWords); ++i)
-      if ((Bits[i] & ~RHS.Bits[i]) != 0)
-        return true;
+      if ((Bits[i] & ~RHS.Bits[i]) != 0) {
+        COVPOINT_ASSERT("BitVectorH562"); return true; }
 
     for (; i != ThisWords ; ++i)
       if (Bits[i] != 0)

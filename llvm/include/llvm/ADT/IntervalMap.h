@@ -115,7 +115,7 @@
 #include <iterator>
 #include <new>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 //===----------------------------------------------------------------------===//
@@ -1157,8 +1157,8 @@ treeSafeLookup(KeyT x, ValT NotFound) const {
   assert(branched() && "treeLookup assumes a branched root");
 
   IntervalMapImpl::NodeRef NR = rootBranch().safeLookup(x);
-  for (unsigned h = height-1; h; --h)
-    NR = NR.get<Branch>().safeLookup(x);
+  for (unsigned h = height-1; h; --h) {
+    COVPOINT_ASSERT("IntervalMapH1161"); NR = NR.get<Branch>().safeLookup(x); }
   return NR.get<Leaf>().safeLookup(x, NotFound);
 }
 

@@ -22,7 +22,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 namespace detail {
@@ -87,7 +87,7 @@ public:
 
   /// Grow the DenseSet so that it can contain at least \p NumEntries items
   /// before resizing again.
-  void reserve(size_t Size) { TheMap.reserve(Size); }
+  void reserve(size_t Size) { COVPOINT_ASSERT("DenseSetH90"); TheMap.reserve(Size); }
 
   void clear() {
     TheMap.clear();

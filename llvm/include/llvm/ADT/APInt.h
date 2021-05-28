@@ -21,7 +21,7 @@
 #include <climits>
 #include <cstring>
 #include <string>
-
+#include "coverage_print.h"
 namespace llvm {
 class FoldingSetNodeID;
 class StringRef;
@@ -453,7 +453,7 @@ public:
 
   /// Check if this APInt has an N-bits unsigned integer value.
   bool isIntN(unsigned N) const {
-    assert(N && "N == 0 ???");
+    COVPOINT("APIntH456"); assert(N && "N == 0 ???");
     return getActiveBits() <= N;
   }
 
@@ -1170,7 +1170,7 @@ public:
   /// relationship.
   ///
   /// \returns true if *this == Val
-  bool eq(const APInt &RHS) const { return (*this) == RHS; }
+  bool eq(const APInt &RHS) const { COVPOINT_ASSERT("APIntH1173"); return (*this) == RHS; }
 
   /// Inequality operator.
   ///

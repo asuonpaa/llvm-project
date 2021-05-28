@@ -23,7 +23,7 @@
 #include <memory>
 #include <new>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 class raw_ostream;
@@ -449,7 +449,7 @@ constexpr bool operator<(const T &X, const Optional<T> &Y) {
 
 template <typename T>
 constexpr bool operator<=(const Optional<T> &X, const T &Y) {
-  return !(Y < X);
+  COVPOINT_ASSERT("OptionalH452"); return !(Y < X);
 }
 
 template <typename T>

@@ -30,7 +30,7 @@
 #include <new>
 #include <type_traits>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 namespace detail {
@@ -1029,7 +1029,7 @@ public:
   void init(unsigned InitBuckets) {
     Small = true;
     if (InitBuckets > InlineBuckets) {
-      Small = false;
+      COVPOINT_ASSERT("DenseMapH1032"); Small = false;
       new (getLargeRep()) LargeRep(allocateBuckets(InitBuckets));
     }
     this->BaseT::initEmpty();

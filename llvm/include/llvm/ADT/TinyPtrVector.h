@@ -17,7 +17,7 @@
 #include <cstddef>
 #include <iterator>
 #include <type_traits>
-
+#include "coverage_print.h"
 namespace llvm {
 
 /// TinyPtrVector - This class is specialized for cases where there are
@@ -82,7 +82,7 @@ public:
   }
 
   TinyPtrVector(TinyPtrVector &&RHS) : Val(RHS.Val) {
-    RHS.Val = (EltTy)nullptr;
+    COVPOINT_ASSERT("TinyPtrVectorH85"); RHS.Val = (EltTy)nullptr;
   }
 
   TinyPtrVector &operator=(TinyPtrVector &&RHS) {
