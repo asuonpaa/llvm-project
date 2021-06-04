@@ -25,7 +25,7 @@
 
 #include "llvm/ADT/PostOrderIterator.h"
 #include "llvm/Analysis/LoopInfo.h"
-
+#include "coverage_print.h"
 namespace llvm {
 
 class LoopBlocksTraversal;
@@ -127,7 +127,7 @@ public:
 
   /// Iterate over the cached postorder blocks.
   POIterator beginPostorder() const {
-    assert(isComplete() && "bad loop DFS");
+    COVPOINT_ASSERT("LoopIteratorH130"); assert(isComplete() && "bad loop DFS");
     return PostBlocks.begin();
   }
   POIterator endPostorder() const { return PostBlocks.end(); }
@@ -144,7 +144,7 @@ public:
 
   /// Return true if this block has a postorder number.
   bool hasPostorder(BasicBlock *BB) const {
-    DenseMap<BasicBlock*, unsigned>::const_iterator I = PostNumbers.find(BB);
+    COVPOINT_ASSERT("LoopIteratorH147"); DenseMap<BasicBlock*, unsigned>::const_iterator I = PostNumbers.find(BB);
     return I != PostNumbers.end() && I->second;
   }
 

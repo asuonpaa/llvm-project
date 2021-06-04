@@ -8,7 +8,7 @@
 
 #ifndef LLVM_ANALYSIS_VALUELATTICE_H
 #define LLVM_ANALYSIS_VALUELATTICE_H
-
+#include "coverage_print.h"
 #include "llvm/IR/ConstantRange.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/Instructions.h"
@@ -277,7 +277,7 @@ public:
     if (isConstant() && isa<ConstantInt>(getConstant())) {
       return cast<ConstantInt>(getConstant())->getValue();
     } else if (isConstantRange() && getConstantRange().isSingleElement()) {
-      return *getConstantRange().getSingleElement();
+      COVPOINT_ASSERT("ValueLatticeH280"); return *getConstantRange().getSingleElement();
     }
     return None;
   }

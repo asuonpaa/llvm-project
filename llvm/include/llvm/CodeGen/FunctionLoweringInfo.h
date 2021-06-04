@@ -30,7 +30,7 @@
 #include <cassert>
 #include <utility>
 #include <vector>
-
+#include "coverage_print.h"
 namespace llvm {
 
 class Argument;
@@ -255,8 +255,8 @@ public:
   void InvalidatePHILiveOutRegInfo(const PHINode *PN) {
     // PHIs with no uses have no ValueMap entry.
     DenseMap<const Value*, Register>::const_iterator It = ValueMap.find(PN);
-    if (It == ValueMap.end())
-      return;
+    if (It == ValueMap.end()) {
+      COVPOINT_ASSERT("FunctionLoweringInfoH259"); return; }
 
     Register Reg = It->second;
     if (Reg == 0)

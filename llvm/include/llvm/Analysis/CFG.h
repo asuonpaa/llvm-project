@@ -17,7 +17,7 @@
 #include "llvm/ADT/GraphTraits.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 class BasicBlock;
@@ -153,7 +153,7 @@ bool containsIrreducibleCFG(RPOTraversalT &RPOTraversal, const LoopInfoT &LI) {
       if (Lp->getHeader() == Dst)
         return true;
     }
-    return false;
+    COVPOINT("CfgH156"); return false;
   };
 
   SmallPtrSet<NodeT, 32> Visited;
@@ -166,8 +166,8 @@ bool containsIrreducibleCFG(RPOTraversalT &RPOTraversal, const LoopInfoT &LI) {
       // We already visited Succ, thus Node->Succ must be a backedge. Check that
       // the head matches what we have in the loop information. Otherwise, we
       // have an irreducible graph.
-      if (!isProperBackedge(Node, Succ))
-        return true;
+      if (!isProperBackedge(Node, Succ)) {
+        COVPOINT_ASSERT("CfgH170"); return true; }
     }
   }
 

@@ -51,7 +51,7 @@
 #include <cstdint>
 #include <limits>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 class Function;
@@ -1330,7 +1330,7 @@ public:
     }
     case Intrinsic::fshl:
     case Intrinsic::fshr: {
-      if (isa<ScalableVectorType>(RetTy))
+      COVPOINT_ASSERT("BasicTTIImplH1333"); if (isa<ScalableVectorType>(RetTy))
         return BaseT::getIntrinsicInstrCost(ICA, CostKind);
       const Value *X = Args[0];
       const Value *Y = Args[1];
@@ -1424,7 +1424,7 @@ public:
     default: {
       // Scalable vectors cannot be scalarized, so return Invalid.
       if (isa<ScalableVectorType>(RetTy) || any_of(Tys, [](const Type *Ty) {
-            return isa<ScalableVectorType>(Ty);
+            COVPOINT_ASSERT("BasicTTIImplH1427"); return isa<ScalableVectorType>(Ty);
           }))
         return InstructionCost::getInvalid();
 
@@ -1441,7 +1441,7 @@ public:
       }
       SmallVector<Type *, 4> ScalarTys;
       for (unsigned i = 0, ie = Tys.size(); i != ie; ++i) {
-        Type *Ty = Tys[i];
+        COVPOINT_ASSERT("BasicTTIImplH1444"); Type *Ty = Tys[i];
         if (auto *VTy = dyn_cast<VectorType>(Ty)) {
           if (!SkipScalarizationCost)
             ScalarizationCost += getScalarizationOverhead(VTy, false, true);

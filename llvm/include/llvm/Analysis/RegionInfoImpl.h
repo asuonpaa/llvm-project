@@ -33,7 +33,7 @@
 #include <string>
 #include <type_traits>
 #include <vector>
-
+#include "coverage_print.h"
 #define DEBUG_TYPE "region"
 
 namespace llvm {
@@ -104,8 +104,8 @@ template <class Tr>
 bool RegionBase<Tr>::contains(const BlockT *B) const {
   BlockT *BB = const_cast<BlockT *>(B);
 
-  if (!DT->getNode(BB))
-    return false;
+  if (!DT->getNode(BB)) {
+    COVPOINT_ASSERT("RegionInfoImplH108"); return false; }
 
   BlockT *entry = getEntry(), *exit = getExit();
 
@@ -567,8 +567,8 @@ bool RegionInfoBase<Tr>::isCommonDomFrontier(BlockT *BB, BlockT *entry,
                                              BlockT *exit) const {
   for (BlockT *P : make_range(InvBlockTraits::child_begin(BB),
                               InvBlockTraits::child_end(BB))) {
-    if (DT->dominates(entry, P) && !DT->dominates(exit, P))
-      return false;
+    if (DT->dominates(entry, P) && !DT->dominates(exit, P)) {
+      COVPOINT_ASSERT("RegionInfoImplH571"); return false; }
   }
 
   return true;
@@ -601,8 +601,8 @@ bool RegionInfoBase<Tr>::isRegion(BlockT *entry, BlockT *exit) const {
       continue;
     if (exitSuccs->find(Succ) == exitSuccs->end())
       return false;
-    if (!isCommonDomFrontier(Succ, entry, exit))
-      return false;
+    if (!isCommonDomFrontier(Succ, entry, exit)) {
+      COVPOINT_ASSERT("RegionInfoImplH605"); return false; }
   }
 
   // Do not allow edges pointing into the region.

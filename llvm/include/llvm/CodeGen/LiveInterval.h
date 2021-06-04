@@ -38,7 +38,7 @@
 #include <set>
 #include <tuple>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
   class CoalescerPair;
@@ -959,8 +959,8 @@ namespace llvm {
 
     /// Select a different destination live range.
     void setDest(LiveRange *lr) {
-      if (LR != lr && isDirty())
-        flush();
+      if (LR != lr && isDirty()) {
+        COVPOINT_ASSERT("LiveIntervalH963"); flush(); }
       LR = lr;
     }
 
