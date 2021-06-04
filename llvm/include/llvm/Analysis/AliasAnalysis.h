@@ -921,7 +921,7 @@ public:
     return alias(LocA, LocB) == AliasResult::MustAlias;
   }
   bool isMustAlias(const Value *V1, const Value *V2) {
-    COVPOINT_ASSERT("AliasAnalysisH924"); return alias(MemoryLocation(V1, LocationSize::precise(1)),
+    COVPOINT("AliasAnalysisH924"); return alias(MemoryLocation(V1, LocationSize::precise(1)),
                  MemoryLocation(V2, LocationSize::precise(1))) ==
            AliasResult::MustAlias;
   }

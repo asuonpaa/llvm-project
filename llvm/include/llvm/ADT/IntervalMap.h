@@ -1158,7 +1158,7 @@ treeSafeLookup(KeyT x, ValT NotFound) const {
 
   IntervalMapImpl::NodeRef NR = rootBranch().safeLookup(x);
   for (unsigned h = height-1; h; --h) {
-    COVPOINT_ASSERT("IntervalMapH1161"); NR = NR.get<Branch>().safeLookup(x); }
+    COVPOINT("IntervalMapH1161"); NR = NR.get<Branch>().safeLookup(x); }
   return NR.get<Leaf>().safeLookup(x, NotFound);
 }
 

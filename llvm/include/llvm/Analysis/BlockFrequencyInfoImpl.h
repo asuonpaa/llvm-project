@@ -90,7 +90,7 @@ public:
   BlockMass() = default;
   explicit BlockMass(uint64_t Mass) : Mass(Mass) {}
 
-  static BlockMass getEmpty() { COVPOINT_ASSERT("BlockFrequencyInfoImplH93"); return BlockMass(); }
+  static BlockMass getEmpty() { COVPOINT("BlockFrequencyInfoImplH93"); return BlockMass(); }
 
   static BlockMass getFull() {
     return BlockMass(std::numeric_limits<uint64_t>::max());
@@ -236,14 +236,14 @@ public:
     LoopData(LoopData *Parent, It1 FirstHeader, It1 LastHeader, It2 FirstOther,
              It2 LastOther)
         : Parent(Parent), Nodes(FirstHeader, LastHeader) {
-      COVPOINT_ASSERT("BlockFrequencyInfoImplH239"); NumHeaders = Nodes.size();
+      COVPOINT("BlockFrequencyInfoImplH239"); NumHeaders = Nodes.size();
       Nodes.insert(Nodes.end(), FirstOther, LastOther);
       BackedgeMass.resize(NumHeaders);
     }
 
     bool isHeader(const BlockNode &Node) const {
       if (isIrreducible()) {
-        COVPOINT_ASSERT("BlockFrequencyInfoImplH246"); return std::binary_search(Nodes.begin(), Nodes.begin() + NumHeaders,
+        COVPOINT("BlockFrequencyInfoImplH246"); return std::binary_search(Nodes.begin(), Nodes.begin() + NumHeaders,
                                   Node); }
       return Node == Nodes[0];
     }
@@ -254,7 +254,7 @@ public:
     HeaderMassList::difference_type getHeaderIndex(const BlockNode &B) {
       assert(isHeader(B) && "this is only valid on loop header blocks");
       if (isIrreducible()) {
-        COVPOINT_ASSERT("BlockFrequencyInfoImplH257"); return std::lower_bound(Nodes.begin(), Nodes.begin() + NumHeaders, B) -
+        COVPOINT("BlockFrequencyInfoImplH257"); return std::lower_bound(Nodes.begin(), Nodes.begin() + NumHeaders, B) -
                Nodes.begin(); }
       return 0;
     }
@@ -611,14 +611,14 @@ struct IrreducibleGraph {
     unsigned NumIn = 0;
     std::deque<const IrrNode *> Edges;
 
-    IrrNode(const BlockNode &Node) : Node(Node) {COVPOINT_ASSERT("BlockFrequencyInfoImplH614");}
+    IrrNode(const BlockNode &Node) : Node(Node) {COVPOINT("BlockFrequencyInfoImplH614");}
 
     using iterator = std::deque<const IrrNode *>::const_iterator;
 
-    iterator pred_begin() const { COVPOINT_ASSERT("BlockFrequencyInfoImplH618"); return Edges.begin(); }
-    iterator succ_begin() const { COVPOINT_ASSERT("BlockFrequencyInfoImplH619"); return Edges.begin() + NumIn; }
-    iterator pred_end() const { COVPOINT_ASSERT("BlockFrequencyInfoImplH620"); return succ_begin(); }
-    iterator succ_end() const { COVPOINT_ASSERT("BlockFrequencyInfoImplH621"); return Edges.end(); }
+    iterator pred_begin() const { COVPOINT("BlockFrequencyInfoImplH618"); return Edges.begin(); }
+    iterator succ_begin() const { COVPOINT("BlockFrequencyInfoImplH619"); return Edges.begin() + NumIn; }
+    iterator pred_end() const { COVPOINT("BlockFrequencyInfoImplH620"); return succ_begin(); }
+    iterator succ_end() const { COVPOINT("BlockFrequencyInfoImplH621"); return Edges.end(); }
   };
   BlockNode Start;
   const IrrNode *StartIrr = nullptr;
@@ -637,7 +637,7 @@ struct IrreducibleGraph {
   template <class BlockEdgesAdder>
   IrreducibleGraph(BFIBase &BFI, const BFIBase::LoopData *OuterLoop,
                    BlockEdgesAdder addBlockEdges) : BFI(BFI) {
-    COVPOINT_ASSERT("BlockFrequencyInfoImplH640"); initialize(OuterLoop, addBlockEdges);
+    COVPOINT("BlockFrequencyInfoImplH640"); initialize(OuterLoop, addBlockEdges);
   }
 
   template <class BlockEdgesAdder>
@@ -647,7 +647,7 @@ struct IrreducibleGraph {
   void addNodesInFunction();
 
   void addNode(const BlockNode &Node) {
-    COVPOINT_ASSERT("BlockFrequencyInfoImplH650"); Nodes.emplace_back(Node);
+    COVPOINT("BlockFrequencyInfoImplH650"); Nodes.emplace_back(Node);
     BFI.Working[Node.Index].getMass() = BlockMass::getEmpty();
   }
 
@@ -662,7 +662,7 @@ struct IrreducibleGraph {
 template <class BlockEdgesAdder>
 void IrreducibleGraph::initialize(const BFIBase::LoopData *OuterLoop,
                                   BlockEdgesAdder addBlockEdges) {
-  COVPOINT_ASSERT("BlockFrequencyInfoImplH665"); if (OuterLoop) {
+  COVPOINT("BlockFrequencyInfoImplH665"); if (OuterLoop) {
     addNodesInLoop(*OuterLoop);
     for (auto N : OuterLoop->Nodes)
       addEdges(N, OuterLoop, addBlockEdges);
@@ -678,7 +678,7 @@ template <class BlockEdgesAdder>
 void IrreducibleGraph::addEdges(const BlockNode &Node,
                                 const BFIBase::LoopData *OuterLoop,
                                 BlockEdgesAdder addBlockEdges) {
-  COVPOINT_ASSERT("BlockFrequencyInfoImplH681"); auto L = Lookup.find(Node.Index);
+  COVPOINT("BlockFrequencyInfoImplH681"); auto L = Lookup.find(Node.Index);
   if (L == Lookup.end())
     return;
   IrrNode &Irr = *L->second;
@@ -1217,7 +1217,7 @@ bool BlockFrequencyInfoImpl<BT>::computeMassInLoop(LoopData &Loop) {
   LLVM_DEBUG(dbgs() << "compute-mass-in-loop: " << getLoopName(Loop) << "\n");
 
   if (Loop.isIrreducible()) {
-    COVPOINT_ASSERT("BlockFrequencyInfoImplH1220"); LLVM_DEBUG(dbgs() << "isIrreducible = true\n");
+    COVPOINT("BlockFrequencyInfoImplH1220"); LLVM_DEBUG(dbgs() << "isIrreducible = true\n");
     Distribution Dist;
     unsigned NumHeadersWithWeight = 0;
     Optional<uint64_t> MinHeaderWeight;
@@ -1251,7 +1251,7 @@ bool BlockFrequencyInfoImpl<BT>::computeMassInLoop(LoopData &Loop) {
     // and the minimum seems to perform better than the average.)
     // FIXME: better update in the passes that drop the header weight.
     // If no headers have a weight, give them even weight (use weight 1).
-    COVPOINT_ASSERT("BlockFrequencyInfoImplH1254"); if (!MinHeaderWeight)
+    COVPOINT("BlockFrequencyInfoImplH1254"); if (!MinHeaderWeight)
       MinHeaderWeight = 1;
     for (uint32_t H : HeadersWithoutWeight) {
       auto &HeaderNode = Loop.Nodes[H];
@@ -1300,7 +1300,7 @@ bool BlockFrequencyInfoImpl<BT>::tryToComputeMassInFunction() {
       continue;
 
     if (!propagateMassToSuccessors(nullptr, Node)) {
-      COVPOINT_ASSERT("BlockFrequencyInfoImplH1303"); return false; }
+      COVPOINT("BlockFrequencyInfoImplH1303"); return false; }
   }
   return true;
 }
@@ -1308,7 +1308,7 @@ bool BlockFrequencyInfoImpl<BT>::tryToComputeMassInFunction() {
 template <class BT> void BlockFrequencyInfoImpl<BT>::computeMassInFunction() {
   if (tryToComputeMassInFunction())
     return;
-  COVPOINT_ASSERT("BlockFrequencyInfoImplH1311"); computeIrreducibleMass(nullptr, Loops.begin());
+  COVPOINT("BlockFrequencyInfoImplH1311"); computeIrreducibleMass(nullptr, Loops.begin());
   if (tryToComputeMassInFunction())
     return;
   llvm_unreachable("unhandled irreducible control flow");
@@ -1325,11 +1325,11 @@ template <class BT> struct BlockEdgesAdder {
   const BlockFrequencyInfoImpl<BT> &BFI;
 
   explicit BlockEdgesAdder(const BlockFrequencyInfoImpl<BT> &BFI)
-      : BFI(BFI) {COVPOINT_ASSERT("BlockFrequencyInfoImplH1328");}
+      : BFI(BFI) {COVPOINT("BlockFrequencyInfoImplH1328");}
 
   void operator()(IrreducibleGraph &G, IrreducibleGraph::IrrNode &Irr,
                   const LoopData *OuterLoop) {
-    COVPOINT_ASSERT("BlockFrequencyInfoImplH1332"); const BlockT *BB = BFI.RPOT[Irr.Node.Index];
+    COVPOINT("BlockFrequencyInfoImplH1332"); const BlockT *BB = BFI.RPOT[Irr.Node.Index];
     for (const auto Succ : children<const BlockT *>(BB))
       G.addEdge(Irr, BFI.getNode(Succ), OuterLoop);
   }
@@ -1340,7 +1340,7 @@ template <class BT> struct BlockEdgesAdder {
 template <class BT>
 void BlockFrequencyInfoImpl<BT>::computeIrreducibleMass(
     LoopData *OuterLoop, std::list<LoopData>::iterator Insert) {
-  COVPOINT_ASSERT("BlockFrequencyInfoImplH1343"); LLVM_DEBUG(dbgs() << "analyze-irreducible-in-";
+  COVPOINT("BlockFrequencyInfoImplH1343"); LLVM_DEBUG(dbgs() << "analyze-irreducible-in-";
              if (OuterLoop) dbgs()
              << "loop: " << getLoopName(*OuterLoop) << "\n";
              else dbgs() << "function\n");
@@ -1386,7 +1386,7 @@ BlockFrequencyInfoImpl<BT>::propagateMassToSuccessors(LoopData *OuterLoop,
               Dist, OuterLoop, Node, getNode(*SI),
               getWeightFromBranchProb(BPI->getEdgeProbability(BB, SI)))) {
         // Irreducible backedge.
-        COVPOINT_ASSERT("BlockFrequencyInfoImplH1389"); return false; }
+        COVPOINT("BlockFrequencyInfoImplH1389"); return false; }
   }
 
   // Distribute mass to successors, saving exit and backedge data in the

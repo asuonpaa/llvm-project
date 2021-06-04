@@ -82,7 +82,7 @@ public:
   }
 
   TinyPtrVector(TinyPtrVector &&RHS) : Val(RHS.Val) {
-    COVPOINT_ASSERT("TinyPtrVectorH85"); RHS.Val = (EltTy)nullptr;
+    COVPOINT("TinyPtrVectorH85"); RHS.Val = (EltTy)nullptr;
   }
 
   TinyPtrVector &operator=(TinyPtrVector &&RHS) {

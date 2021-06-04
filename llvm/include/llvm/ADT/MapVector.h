@@ -110,7 +110,7 @@ public:
   ValueT lookup(const KeyT &Key) const {
     static_assert(std::is_copy_constructible<ValueT>::value,
                   "Cannot call lookup() if ValueT is not copyable.");
-    COVPOINT_ASSERT("MapVectorH113"); typename MapType::const_iterator Pos = Map.find(Key);
+    COVPOINT("MapVectorH113"); typename MapType::const_iterator Pos = Map.find(Key);
     return Pos == Map.end()? ValueT() : Vector[Pos->second].second;
   }
 
@@ -211,13 +211,13 @@ void MapVector<KeyT, ValueT, MapType, VectorType>::remove_if(Function Pred) {
   for (auto I = O, E = Vector.end(); I != E; ++I) {
     if (Pred(*I)) {
       // Erase from the map.
-      COVPOINT_ASSERT("MapVectorH214"); Map.erase(I->first);
+      COVPOINT("MapVectorH214"); Map.erase(I->first);
       continue;
     }
 
     if (I != O) {
       // Move the value and update the index in the map.
-      COVPOINT_ASSERT("MapVectorH220"); *O = std::move(*I);
+      COVPOINT("MapVectorH220"); *O = std::move(*I);
       Map[O->first] = O - Vector.begin();
     }
     ++O;

@@ -1170,7 +1170,7 @@ public:
   /// relationship.
   ///
   /// \returns true if *this == Val
-  bool eq(const APInt &RHS) const { COVPOINT_ASSERT("APIntH1173"); return (*this) == RHS; }
+  bool eq(const APInt &RHS) const { COVPOINT("APIntH1173"); return (*this) == RHS; }
 
   /// Inequality operator.
   ///

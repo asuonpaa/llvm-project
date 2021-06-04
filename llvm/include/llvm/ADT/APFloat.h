@@ -827,7 +827,7 @@ class APFloat : public APFloatBase {
   }
 
   void makeLargest(bool Neg) {
-    COVPOINT_ASSERT("APFloatH830"); APFLOAT_DISPATCH_ON_SEMANTICS(makeLargest(Neg));
+    COVPOINT("APFloatH830"); APFLOAT_DISPATCH_ON_SEMANTICS(makeLargest(Neg));
   }
 
   void makeSmallest(bool Neg) {
@@ -932,7 +932,7 @@ public:
   ///
   /// \param Negative - True iff the number should be negative
   static APFloat getLargest(const fltSemantics &Sem, bool Negative = false) {
-    COVPOINT_ASSERT("APFloatH935"); APFloat Val(Sem, uninitialized);
+    COVPOINT("APFloatH935"); APFloat Val(Sem, uninitialized);
     Val.makeLargest(Negative);
     return Val;
   }
@@ -1217,7 +1217,7 @@ public:
   bool isNegZero() const { return isZero() && isNegative(); }
   bool isSmallest() const { APFLOAT_DISPATCH_ON_SEMANTICS(isSmallest()); }
   bool isLargest() const { APFLOAT_DISPATCH_ON_SEMANTICS(isLargest()); }
-  bool isInteger() const { COVPOINT_ASSERT("APFfloatH1220"); APFLOAT_DISPATCH_ON_SEMANTICS(isInteger()); }
+  bool isInteger() const { COVPOINT("APFloatH1220"); APFLOAT_DISPATCH_ON_SEMANTICS(isInteger()); }
   bool isIEEE() const { return usesLayout<IEEEFloat>(getSemantics()); }
 
   APFloat &operator=(const APFloat &RHS) = default;
@@ -1285,7 +1285,7 @@ inline APFloat neg(APFloat X) {
 LLVM_READONLY
 inline APFloat minnum(const APFloat &A, const APFloat &B) {
   if (A.isNaN()) {
-    COVPOINT_ASSERT("APFloatH1288"); return B; }
+    COVPOINT("APFloatH1288"); return B; }
   if (B.isNaN())
     return A;
   return B < A ? B : A;
@@ -1307,7 +1307,7 @@ inline APFloat maxnum(const APFloat &A, const APFloat &B) {
 LLVM_READONLY
 inline APFloat minimum(const APFloat &A, const APFloat &B) {
   if (A.isNaN()) {
-    COVPOINT_ASSERT("APFloatH1310"); return A; }
+    COVPOINT("APFloatH1310"); return A; }
   if (B.isNaN())
     return B;
   if (A.isZero() && B.isZero() && (A.isNegative() != B.isNegative()))

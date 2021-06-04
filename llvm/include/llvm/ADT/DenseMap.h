@@ -1029,7 +1029,7 @@ public:
   void init(unsigned InitBuckets) {
     Small = true;
     if (InitBuckets > InlineBuckets) {
-      COVPOINT_ASSERT("DenseMapH1032"); Small = false;
+      COVPOINT("DenseMapH1032"); Small = false;
       new (getLargeRep()) LargeRep(allocateBuckets(InitBuckets));
     }
     this->BaseT::initEmpty();
