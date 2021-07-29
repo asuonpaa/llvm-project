@@ -1424,7 +1424,7 @@ public:
     default: {
       // Scalable vectors cannot be scalarized, so return Invalid.
       if (isa<ScalableVectorType>(RetTy) || any_of(Tys, [](const Type *Ty) {
-            COVPOINT_ASSERT("BasicTTIImplH1427"); return isa<ScalableVectorType>(Ty);
+            COVPOINT("BasicTTIImplH1427"); return isa<ScalableVectorType>(Ty);
           }))
         return InstructionCost::getInvalid();
 
@@ -1441,7 +1441,7 @@ public:
       }
       SmallVector<Type *, 4> ScalarTys;
       for (unsigned i = 0, ie = Tys.size(); i != ie; ++i) {
-        COVPOINT_ASSERT("BasicTTIImplH1444"); Type *Ty = Tys[i];
+        COVPOINT("BasicTTIImplH1444"); Type *Ty = Tys[i];
         if (auto *VTy = dyn_cast<VectorType>(Ty)) {
           if (!SkipScalarizationCost)
             ScalarizationCost += getScalarizationOverhead(VTy, false, true);

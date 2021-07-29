@@ -277,7 +277,7 @@ public:
     if (isConstant() && isa<ConstantInt>(getConstant())) {
       return cast<ConstantInt>(getConstant())->getValue();
     } else if (isConstantRange() && getConstantRange().isSingleElement()) {
-      COVPOINT_ASSERT("ValueLatticeH280"); return *getConstantRange().getSingleElement();
+      COVPOINT("ValueLatticeH280"); return *getConstantRange().getSingleElement();
     }
     return None;
   }

@@ -1202,7 +1202,7 @@ template <class BT> void BlockFrequencyInfoImpl<BT>::computeMassInLoops() {
   for (auto L = Loops.rbegin(), E = Loops.rend(); L != E; ++L) {
     if (computeMassInLoop(*L))
       continue;
-    COVPOINT_ASSERT("BlockFrequencyInfoImplH1205"); auto Next = std::next(L);
+    COVPOINT("BlockFrequencyInfoImplH1205"); auto Next = std::next(L);
     computeIrreducibleMass(&*L, L.base());
     L = std::prev(Next);
     if (computeMassInLoop(*L))
@@ -1277,7 +1277,7 @@ bool BlockFrequencyInfoImpl<BT>::computeMassInLoop(LoopData &Loop) {
     for (const BlockNode &M : Loop.members())
       if (!propagateMassToSuccessors(&Loop, M)) {
         // Irreducible backedge.
-        COVPOINT_ASSERT("BlockFrequencyInfoImplH1280"); return false; }
+        COVPOINT("BlockFrequencyInfoImplH1280"); return false; }
   }
 
   computeLoopScale(Loop);

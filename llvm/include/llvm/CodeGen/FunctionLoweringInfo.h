@@ -256,7 +256,7 @@ public:
     // PHIs with no uses have no ValueMap entry.
     DenseMap<const Value*, Register>::const_iterator It = ValueMap.find(PN);
     if (It == ValueMap.end()) {
-      COVPOINT_ASSERT("FunctionLoweringInfoH259"); return; }
+      COVPOINT("FunctionLoweringInfoH259"); return; }
 
     Register Reg = It->second;
     if (Reg == 0)

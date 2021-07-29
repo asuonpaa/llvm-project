@@ -351,7 +351,7 @@ public:
   }
 
   void resetOptimized() {
-    COVPOINT_ASSERT("MemorySSAH354"); OptimizedID = INVALID_MEMORYACCESS_ID;
+    COVPOINT("MemorySSAH354"); OptimizedID = INVALID_MEMORYACCESS_ID;
   }
 
 protected:
@@ -581,7 +581,7 @@ public:
   }
 
   MemoryAccess *getIncomingValueForBlock(const BasicBlock *BB) const {
-    COVPOINT_ASSERT("MemorySSAH584"); int Idx = getBasicBlockIndex(BB);
+    COVPOINT("MemorySSAH584"); int Idx = getBasicBlockIndex(BB);
     assert(Idx >= 0 && "Invalid basic block argument!");
     return getIncomingValue(Idx);
   }
@@ -616,7 +616,7 @@ public:
 
   // After deleting incoming block BB, the incoming blocks order may be changed.
   void unorderedDeleteIncomingBlock(const BasicBlock *BB) {
-    COVPOINT_ASSERT("MemorySSAH619"); unorderedDeleteIncomingIf(
+    COVPOINT("MemorySSAH619"); unorderedDeleteIncomingIf(
         [&](const MemoryAccess *, const BasicBlock *B) { return BB == B; });
   }
 
@@ -693,7 +693,7 @@ inline void MemoryUseOrDef::resetOptimized() {
   if (auto *MD = dyn_cast<MemoryDef>(this))
     MD->resetOptimized();
   else {
-    COVPOINT_ASSERT("MemorySSAH696"); cast<MemoryUse>(this)->resetOptimized(); }
+    COVPOINT("MemorySSAH696"); cast<MemoryUse>(this)->resetOptimized(); }
 }
 
 template <> struct OperandTraits<MemoryPhi> : public HungoffOperandTraits<2> {};

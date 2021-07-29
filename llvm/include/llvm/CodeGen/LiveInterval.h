@@ -960,7 +960,7 @@ namespace llvm {
     /// Select a different destination live range.
     void setDest(LiveRange *lr) {
       if (LR != lr && isDirty()) {
-        COVPOINT_ASSERT("LiveIntervalH963"); flush(); }
+        COVPOINT("LiveIntervalH963"); flush(); }
       LR = lr;
     }
 

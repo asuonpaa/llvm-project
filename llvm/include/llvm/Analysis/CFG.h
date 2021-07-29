@@ -167,7 +167,7 @@ bool containsIrreducibleCFG(RPOTraversalT &RPOTraversal, const LoopInfoT &LI) {
       // the head matches what we have in the loop information. Otherwise, we
       // have an irreducible graph.
       if (!isProperBackedge(Node, Succ)) {
-        COVPOINT_ASSERT("CfgH170"); return true; }
+        COVPOINT("CfgH170"); return true; }
     }
   }
 

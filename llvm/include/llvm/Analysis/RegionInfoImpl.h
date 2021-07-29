@@ -105,7 +105,7 @@ bool RegionBase<Tr>::contains(const BlockT *B) const {
   BlockT *BB = const_cast<BlockT *>(B);
 
   if (!DT->getNode(BB)) {
-    COVPOINT_ASSERT("RegionInfoImplH108"); return false; }
+    COVPOINT("RegionInfoImplH108"); return false; }
 
   BlockT *entry = getEntry(), *exit = getExit();
 
@@ -568,7 +568,7 @@ bool RegionInfoBase<Tr>::isCommonDomFrontier(BlockT *BB, BlockT *entry,
   for (BlockT *P : make_range(InvBlockTraits::child_begin(BB),
                               InvBlockTraits::child_end(BB))) {
     if (DT->dominates(entry, P) && !DT->dominates(exit, P)) {
-      COVPOINT_ASSERT("RegionInfoImplH571"); return false; }
+      COVPOINT("RegionInfoImplH571"); return false; }
   }
 
   return true;
@@ -602,7 +602,7 @@ bool RegionInfoBase<Tr>::isRegion(BlockT *entry, BlockT *exit) const {
     if (exitSuccs->find(Succ) == exitSuccs->end())
       return false;
     if (!isCommonDomFrontier(Succ, entry, exit)) {
-      COVPOINT_ASSERT("RegionInfoImplH605"); return false; }
+      COVPOINT("RegionInfoImplH605"); return false; }
   }
 
   // Do not allow edges pointing into the region.
