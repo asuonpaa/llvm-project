@@ -21,7 +21,7 @@
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/IRBuilderFolder.h"
-
+#include "coverage_print.h"
 namespace llvm {
 
 /// ConstantFolder - Create constants with minimum, target independent, folding.
@@ -221,7 +221,7 @@ public:
   }
 
   Constant *CreateZExtOrBitCast(Constant *C, Type *DestTy) const override {
-    return ConstantExpr::getZExtOrBitCast(C, DestTy);
+    COVPOINT("ConstantFolderH224"); return ConstantExpr::getZExtOrBitCast(C, DestTy);
   }
 
   Constant *CreateSExtOrBitCast(Constant *C, Type *DestTy) const override {

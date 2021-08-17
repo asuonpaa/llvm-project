@@ -38,7 +38,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-
+#include "coverage_print.h"
 namespace llvm {
 
 template <class ConstantClass> struct ConstantAggrKeyType;
@@ -302,7 +302,7 @@ public:
   bool isNegative() const { return Val.isNegative(); }
 
   /// Return true if the value is infinity
-  bool isInfinity() const { return Val.isInfinity(); }
+  bool isInfinity() const { COVPOINT("ConstantsH305"); return Val.isInfinity(); }
 
   /// Return true if the value is a NaN.
   bool isNaN() const { return Val.isNaN(); }

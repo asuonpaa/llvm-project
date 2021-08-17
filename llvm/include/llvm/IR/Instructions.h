@@ -45,7 +45,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
-
+#include "coverage_print.h"
 namespace llvm {
 
 class APInt;
@@ -2374,7 +2374,7 @@ public:
     return getOperand(0);
   }
   const Value *getAggregateOperand() const {
-    return getOperand(0);
+    COVPOINT("InstructionsH2377"); return getOperand(0);
   }
   static unsigned getAggregateOperandIndex() {
     return 0U;                      // get index for modifying correct operand
@@ -2674,7 +2674,7 @@ public:
   }
 
   static unsigned getOperandNumForIncomingValue(unsigned i) {
-    return i;
+    COVPOINT("InstructionsH2677"); return i;
   }
 
   static unsigned getIncomingValueNumForOperand(unsigned i) {
@@ -3312,7 +3312,7 @@ public:
     CaseIteratorImpl &operator-=(ptrdiff_t N) {
       // Check index correctness after subtraction.
       // Note: Case.Index == getNumCases() means end().
-      assert(Case.Index - N >= 0 &&
+      COVPOINT("InstructionsH3315"); assert(Case.Index - N >= 0 &&
              (unsigned)(Case.Index - N) <= Case.SI->getNumCases() &&
              "Case.Index out the number of cases.");
       Case.Index -= N;
@@ -3430,8 +3430,8 @@ public:
     ConstCaseIt I = llvm::find_if(cases(), [C](ConstCaseHandle &Case) {
       return Case.getCaseValue() == C;
     });
-    if (I != case_end())
-      return I;
+    if (I != case_end()) {
+      COVPOINT("InstructionsH3434"); return I; }
 
     return case_default();
   }

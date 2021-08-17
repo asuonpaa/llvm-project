@@ -59,7 +59,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-
+#include "coverage_print.h"
 namespace llvm {
 
 class BranchProbability;
@@ -604,7 +604,7 @@ public:
   /// Return the maximum number of "x & (x - 1)" operations that can be done
   /// instead of deferring to a custom CTPOP.
   virtual unsigned getCustomCtpopCost(EVT VT, ISD::CondCode Cond) const {
-    return 1;
+    COVPOINT("TargetLoweringH607"); return 1;
   }
 
   /// Return true if instruction generated for equality comparison is folded
@@ -1451,7 +1451,7 @@ public:
       return RegisterVT;
     }
     if (VT.isInteger()) {
-      return getRegisterType(Context, getTypeToTransformTo(Context, VT));
+      COVPOINT_ASSERT("TargetLoweringH1454"); return getRegisterType(Context, getTypeToTransformTo(Context, VT));
     }
     llvm_unreachable("Unsupported extended type!");
   }
@@ -1477,7 +1477,7 @@ public:
       return getVectorTypeBreakdown(Context, VT, VT1, NumIntermediates, VT2);
     }
     if (VT.isInteger()) {
-      unsigned BitWidth = VT.getSizeInBits();
+      COVPOINT_ASSERT("TargetLoweringH1480"); unsigned BitWidth = VT.getSizeInBits();
       unsigned RegWidth = getRegisterType(Context, VT).getSizeInBits();
       return (BitWidth + RegWidth - 1) / RegWidth;
     }

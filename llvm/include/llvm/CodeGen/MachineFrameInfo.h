@@ -19,7 +19,7 @@
 #include "llvm/Support/DataTypes.h"
 #include <cassert>
 #include <vector>
-
+#include "coverage_print.h"
 namespace llvm {
 class raw_ostream;
 class MachineFunction;
@@ -404,19 +404,19 @@ public:
 
   /// Get the local offset mapping for a for an object.
   std::pair<int, int64_t> getLocalFrameObjectMap(int i) const {
-    assert (i >= 0 && (unsigned)i < LocalFrameObjects.size() &&
+    COVPOINT("MachineFrameInfoH407"); assert (i >= 0 && (unsigned)i < LocalFrameObjects.size() &&
             "Invalid local object reference!");
     return LocalFrameObjects[i];
   }
 
   /// Return the number of objects allocated into the local object block.
-  int64_t getLocalFrameObjectCount() const { return LocalFrameObjects.size(); }
+  int64_t getLocalFrameObjectCount() const { COVPOINT("MachineFrameInfoH413"); return LocalFrameObjects.size(); }
 
   /// Set the size of the local object blob.
   void setLocalFrameSize(int64_t sz) { LocalFrameSize = sz; }
 
   /// Get the size of the local object blob.
-  int64_t getLocalFrameSize() const { return LocalFrameSize; }
+  int64_t getLocalFrameSize() const { COVPOINT("MachineFrameInfoH419"); return LocalFrameSize; }
 
   /// Required alignment of the local object blob,
   /// which is the strictest alignment of any object in it.
@@ -425,7 +425,7 @@ public:
   }
 
   /// Return the required alignment of the local object blob.
-  Align getLocalFrameMaxAlign() const { return LocalFrameMaxAlign; }
+  Align getLocalFrameMaxAlign() const { COVPOINT("MachineFrameInfoH428"); return LocalFrameMaxAlign; }
 
   /// Get whether the local allocation blob should be allocated together or
   /// let PEI allocate the locals in it directly.
@@ -544,7 +544,7 @@ public:
   }
 
   SSPLayoutKind getObjectSSPLayout(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
+    COVPOINT("MachineFrameInfoH547"); assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
     return (SSPLayoutKind)Objects[ObjectIdx+NumFixedObjects].SSPLayout;
   }

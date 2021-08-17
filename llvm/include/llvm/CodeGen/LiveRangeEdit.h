@@ -29,7 +29,7 @@
 #include "llvm/CodeGen/SlotIndexes.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include <cassert>
-
+#include "coverage_print.h"
 namespace llvm {
 
 class AAResults;
@@ -64,7 +64,7 @@ public:
 
     /// Called after cloning a virtual register.
     /// This is used for new registers representing connected components of Old.
-    virtual void LRE_DidCloneVirtReg(Register New, Register Old) {}
+    virtual void LRE_DidCloneVirtReg(Register New, Register Old) {COVPOINT("LiveRangeEditH67");}
   };
 
 private:

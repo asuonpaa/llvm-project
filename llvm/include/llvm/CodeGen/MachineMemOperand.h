@@ -22,7 +22,7 @@
 #include "llvm/IR/Value.h" // PointerLikeTypeTraits<Value*>
 #include "llvm/Support/AtomicOrdering.h"
 #include "llvm/Support/DataTypes.h"
-
+#include "coverage_print.h"
 namespace llvm {
 
 class FoldingSetNodeID;
@@ -291,7 +291,7 @@ public:
   /// Change the SourceValue for this MachineMemOperand. This should only be
   /// used when an object is being relocated and all references to it are being
   /// updated.
-  void setValue(const Value *NewSV) { PtrInfo.V = NewSV; }
+  void setValue(const Value *NewSV) { COVPOINT("MachineMemOperandH294"); PtrInfo.V = NewSV; }
   void setValue(const PseudoSourceValue *NewSV) { PtrInfo.V = NewSV; }
   void setOffset(int64_t NewOffset) { PtrInfo.Offset = NewOffset; }
 

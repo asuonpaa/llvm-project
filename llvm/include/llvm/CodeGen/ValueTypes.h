@@ -23,7 +23,7 @@
 #include <cassert>
 #include <cstdint>
 #include <string>
-
+#include "coverage_print.h"
 namespace llvm {
 
   class LLVMContext;
@@ -373,8 +373,8 @@ namespace llvm {
     EVT getRoundIntegerType(LLVMContext &Context) const {
       assert(isInteger() && !isVector() && "Invalid integer type!");
       unsigned BitWidth = getSizeInBits();
-      if (BitWidth <= 8)
-        return EVT(MVT::i8);
+      if (BitWidth <= 8) {
+        COVPOINT("ValueTypesH377"); return EVT(MVT::i8); }
       return getIntegerVT(Context, 1 << Log2_32_Ceil(BitWidth));
     }
 
