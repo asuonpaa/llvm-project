@@ -27,7 +27,7 @@
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/IRBuilderFolder.h"
-
+#include "coverage_print.h"
 namespace llvm {
 
 /// NoFolder - Create "constants" (actually, instructions) with no folding.
@@ -286,7 +286,7 @@ public:
 
   Instruction *CreateSelect(Constant *C,
                             Constant *True, Constant *False) const override {
-    return SelectInst::Create(C, True, False);
+    COVPOINT_ASSERT("NoFolderH289"); return SelectInst::Create(C, True, False);
   }
 
   Instruction *CreateExtractElement(Constant *Vec,

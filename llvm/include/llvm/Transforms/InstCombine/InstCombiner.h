@@ -27,7 +27,7 @@
 #include "llvm/Support/KnownBits.h"
 #include "llvm/Transforms/InstCombine/InstCombineWorklist.h"
 #include <cassert>
-
+#include "coverage_print.h"
 #define DEBUG_TYPE "instcombine"
 
 namespace llvm {
@@ -232,8 +232,8 @@ public:
   /// See also: canFreelyInvertAllUsersOf()
   static bool isFreeToInvert(Value *V, bool WillInvertAllUses) {
     // ~(~(X)) -> X.
-    if (match(V, m_Not(PatternMatch::m_Value())))
-      return true;
+    if (match(V, m_Not(PatternMatch::m_Value()))) {
+      COVPOINT("InstCombinerH236"); return true; }
 
     // Constants can be considered to be not'ed values.
     if (match(V, PatternMatch::m_AnyIntegralConstant()))
@@ -250,8 +250,8 @@ public:
       if (BO->getOpcode() == Instruction::Add ||
           BO->getOpcode() == Instruction::Sub)
         if (isa<Constant>(BO->getOperand(0)) ||
-            isa<Constant>(BO->getOperand(1)))
-          return WillInvertAllUses;
+            isa<Constant>(BO->getOperand(1))) {
+          COVPOINT_ASSERT("InstCombinerH254"); return WillInvertAllUses; }
 
     // Selects with invertible operands are freely invertible
     if (match(V,
@@ -304,7 +304,7 @@ public:
   static Constant *
   getSafeVectorConstantForBinop(BinaryOperator::BinaryOps Opcode, Constant *In,
                                 bool IsRHSConstant) {
-    auto *InVTy = cast<FixedVectorType>(In->getType());
+    COVPOINT_ASSERT("InstCombinerH307"); auto *InVTy = cast<FixedVectorType>(In->getType());
 
     Type *EltTy = InVTy->getElementType();
     auto *SafeC = ConstantExpr::getBinOpIdentity(Opcode, EltTy, IsRHSConstant);

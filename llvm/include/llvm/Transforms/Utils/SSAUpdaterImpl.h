@@ -19,7 +19,7 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
-
+#include "coverage_print.h"
 #define DEBUG_TYPE "ssaupdater"
 
 namespace llvm {
@@ -96,7 +96,7 @@ public:
 
     // Special case: bail out if BB is unreachable.
     if (BlockList.size() == 0) {
-      ValT V = Traits::GetUndefVal(BB, Updater);
+      COVPOINT_ASSERT("SSAUpdaterImplH99"); ValT V = Traits::GetUndefVal(BB, Updater);
       (*AvailableVals)[BB] = V;
       return V;
     }
@@ -129,8 +129,8 @@ public:
       Preds.clear();
       Traits::FindPredecessorBlocks(Info->BB, &Preds);
       Info->NumPreds = Preds.size();
-      if (Info->NumPreds == 0)
-        Info->Preds = nullptr;
+      if (Info->NumPreds == 0) {
+        COVPOINT("SSAUpdaterImplH133"); Info->Preds = nullptr; }
       else
         Info->Preds = static_cast<BBInfo **>(Allocator.Allocate(
             Info->NumPreds * sizeof(BBInfo *), alignof(BBInfo *)));
@@ -253,7 +253,7 @@ public:
 
           // Treat an unreachable predecessor as a definition with 'undef'.
           if (Pred->BlkNum == 0) {
-            Pred->AvailableVal = Traits::GetUndefVal(Pred->BB, Updater);
+            COVPOINT("SSAUpdaterImplH256"); Pred->AvailableVal = Traits::GetUndefVal(Pred->BB, Updater);
             (*AvailableVals)[Pred->BB] = Pred->AvailableVal;
             Pred->DefBB = Pred;
             Pred->BlkNum = PseudoEntry->BlkNum;
@@ -436,7 +436,7 @@ public:
         if (PredInfo->PHITag) {
           if (IncomingPHIVal == PredInfo->PHITag)
             continue;
-          return false;
+          COVPOINT("SSAUpdaterImplH439"); return false;
         }
         PredInfo->PHITag = IncomingPHIVal;
 

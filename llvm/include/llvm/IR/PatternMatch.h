@@ -42,7 +42,7 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/Casting.h"
 #include <cstdint>
-
+#include "coverage_print.h"
 namespace llvm {
 namespace PatternMatch {
 
@@ -340,7 +340,7 @@ template <typename Predicate> struct api_pred_ty : public Predicate {
       if (const auto *C = dyn_cast<Constant>(V))
         if (auto *CI = dyn_cast_or_null<ConstantInt>(C->getSplatValue()))
           if (this->isValue(CI->getValue())) {
-            Res = &CI->getValue();
+            COVPOINT("PatternMatchH343"); Res = &CI->getValue();
             return true;
           }
 
@@ -552,7 +552,7 @@ struct icmp_pred_with_threshold {
   bool isValue(const APInt &C) {
     switch (Pred) {
     case ICmpInst::Predicate::ICMP_EQ:
-      return C.eq(*Thr);
+      COVPOINT("PatternMatchH555"); return C.eq(*Thr);
     case ICmpInst::Predicate::ICMP_NE:
       return C.ne(*Thr);
     case ICmpInst::Predicate::ICMP_UGT:
@@ -1935,8 +1935,8 @@ struct UAddWithOverflow_match {
 
     // a >u (a + b), b >u (a + b)
     if (Pred == ICmpInst::ICMP_UGT)
-      if (AddExpr.match(ICmpRHS) && (ICmpLHS == AddLHS || ICmpLHS == AddRHS))
-        return L.match(AddLHS) && R.match(AddRHS) && S.match(ICmpRHS);
+      if (AddExpr.match(ICmpRHS) && (ICmpLHS == AddLHS || ICmpLHS == AddRHS)) {
+        COVPOINT("PatternMatchH1939"); return L.match(AddLHS) && R.match(AddRHS) && S.match(ICmpRHS); }
 
     Value *Op1;
     auto XorExpr = m_OneUse(m_Xor(m_Value(Op1), m_AllOnes()));
@@ -1947,8 +1947,8 @@ struct UAddWithOverflow_match {
     }
     //  b > u (a ^ -1)
     if (Pred == ICmpInst::ICMP_UGT) {
-      if (XorExpr.match(ICmpRHS))
-        return L.match(Op1) && R.match(ICmpLHS) && S.match(ICmpRHS);
+      if (XorExpr.match(ICmpRHS)) {
+        COVPOINT_ASSERT("PatternMatchH1951"); return L.match(Op1) && R.match(ICmpLHS) && S.match(ICmpRHS); }
     }
 
     // Match special-case for increment-by-1.
@@ -2276,7 +2276,7 @@ m_c_FMul(const LHS &L, const RHS &R) {
 
 template <typename Opnd_t> struct Signum_match {
   Opnd_t Val;
-  Signum_match(const Opnd_t &V) : Val(V) {}
+  Signum_match(const Opnd_t &V) : Val(V) {COVPOINT_ASSERT("PatternMatchH2279");}
 
   template <typename OpTy> bool match(OpTy *V) {
     unsigned TypeSize = V->getType()->getScalarSizeInBits();

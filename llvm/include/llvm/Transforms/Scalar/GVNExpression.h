@@ -31,7 +31,7 @@
 #include <cassert>
 #include <iterator>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 class BasicBlock;
@@ -452,8 +452,8 @@ public:
   }
 
   bool equals(const Expression &Other) const override {
-    if (!this->BasicExpression::equals(Other))
-      return false;
+    if (!this->BasicExpression::equals(Other)) {
+      COVPOINT_ASSERT("GVNExpressionsH456"); return false; }
     const AggregateValueExpression &OE = cast<AggregateValueExpression>(Other);
     return NumIntOperands == OE.NumIntOperands &&
            std::equal(int_op_begin(), int_op_end(), OE.int_op_begin());

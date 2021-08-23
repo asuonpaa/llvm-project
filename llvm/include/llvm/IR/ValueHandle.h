@@ -18,7 +18,7 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/Casting.h"
 #include <cassert>
-
+#include "coverage_print.h"
 namespace llvm {
 
 /// This is the common base class of value handles.
@@ -111,7 +111,7 @@ protected:
   ///
   /// This should only be used if a derived class has manually removed the
   /// handle from the use list.
-  void clearValPtr() { setValPtr(nullptr); }
+  void clearValPtr() { COVPOINT_ASSERT("ValueHandleH114"); setValPtr(nullptr); }
 
 public:
   // Callbacks made from Value.
@@ -304,7 +304,7 @@ public:
   }
 
   ValueTy *operator->() const { return getValPtr(); }
-  ValueTy &operator*() const { return *getValPtr(); }
+  ValueTy &operator*() const { COVPOINT_ASSERT("ValueHandleH307"); return *getValPtr(); }
 };
 
 // Treat AssertingVH<T> like T* inside maps. This also allows using find_as()
@@ -467,7 +467,7 @@ class PoisoningVH final
 
   /// Handle deletion by poisoning the handle.
   void deleted() override {
-    assert(!Poisoned && "Tried to delete an already poisoned handle!");
+    COVPOINT_ASSERT("ValueHandleH470"); assert(!Poisoned && "Tried to delete an already poisoned handle!");
     Poisoned = true;
     RemoveFromUseList();
   }
@@ -501,8 +501,8 @@ public:
       : CallbackVH(RHS), Poisoned(RHS.Poisoned) {}
 
   ~PoisoningVH() {
-    if (Poisoned)
-      clearValPtr();
+    if (Poisoned) {
+      COVPOINT_ASSERT("ValueHandleH505"); clearValPtr(); }
   }
 
   PoisoningVH &operator=(const PoisoningVH &RHS) {

@@ -38,7 +38,7 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
-
+#include "coverage_print.h"
 namespace llvm {
 
 template <typename NodeT, bool IsPostDom>
@@ -78,7 +78,7 @@ template <class NodeT> class DomTreeNodeBase {
   const_iterator end() const { return Children.end(); }
 
   DomTreeNodeBase *const &back() const { return Children.back(); }
-  DomTreeNodeBase *&back() { return Children.back(); }
+  DomTreeNodeBase *&back() { COVPOINT("GenericDomTreeH81"); return Children.back(); }
 
   iterator_range<iterator> children() { return make_range(begin(), end()); }
   iterator_range<const_iterator> children() const {

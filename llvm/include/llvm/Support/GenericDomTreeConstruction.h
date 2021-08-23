@@ -45,7 +45,7 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/GenericDomTree.h"
 #include <queue>
-
+#include "coverage_print.h"
 #define DEBUG_TYPE "dom-tree-builder"
 
 namespace llvm {
@@ -529,7 +529,7 @@ struct SemiNCAInfo {
         // root from the set of roots, as it is reverse-reachable from the other
         // one.
         if (llvm::is_contained(Roots, N)) {
-          LLVM_DEBUG(dbgs() << "\tForward DFS walk found another root "
+          COVPOINT_ASSERT("GenericDomTreeConstructionH532"); LLVM_DEBUG(dbgs() << "\tForward DFS walk found another root "
                             << BlockNamePrinter(N) << "\n\tRemoving root "
                             << BlockNamePrinter(Root) << "\n");
           std::swap(Root, Roots.back());

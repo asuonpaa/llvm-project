@@ -26,7 +26,7 @@
 #include "llvm/IR/ValueHandle.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/InstructionCost.h"
-
+#include "coverage_print.h"
 namespace llvm {
 extern cl::opt<unsigned> SCEVCheapExpansionBudget;
 
@@ -152,7 +152,7 @@ class SCEVExpander : public SCEVVisitor<SCEVExpander, Value *> {
       Builder.SetCurrentDebugLocation(DbgLoc);
     }
 
-    BasicBlock::iterator GetInsertPoint() const { return Point; }
+    BasicBlock::iterator GetInsertPoint() const { COVPOINT("ScalarEvolutionExpanderH155"); return Point; }
     void SetInsertPoint(BasicBlock::iterator I) { Point = I; }
   };
 
