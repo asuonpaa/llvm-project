@@ -28,7 +28,7 @@
 #include <algorithm>
 #include <cassert>
 #include <string>
-
+#include "coverage_print.h"
 using namespace llvm;
 
 #define DEBUG_TYPE "block-freq"
@@ -200,7 +200,7 @@ void BlockFrequencyInfo::calculate(const Function &F,
 }
 
 BlockFrequency BlockFrequencyInfo::getBlockFreq(const BasicBlock *BB) const {
-  return BFI ? BFI->getBlockFreq(BB) : 0;
+  COVPOINT("BlockFrequencyInfo203"); return BFI ? BFI->getBlockFreq(BB) : 0;
 }
 
 Optional<uint64_t>

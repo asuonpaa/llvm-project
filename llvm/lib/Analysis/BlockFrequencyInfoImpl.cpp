@@ -34,7 +34,7 @@
 #include <numeric>
 #include <utility>
 #include <vector>
-
+#include "coverage_print.h"
 using namespace llvm;
 using namespace llvm::bfi_detail;
 
@@ -193,7 +193,7 @@ static void combineWeightsByHashing(WeightList &Weights) {
     return;
 
   // Fill in the new weights.
-  Weights.clear();
+  COVPOINT_ASSERT("BlockFrequencyInfoImpl196"); Weights.clear();
   Weights.reserve(Combined.size());
   for (const auto &I : Combined)
     Weights.push_back(I.second);
@@ -333,7 +333,7 @@ bool BlockFrequencyInfoImplBase::addToDist(Distribution &Dist,
   }
 
   if (Resolved < Pred) {
-    if (!isLoopHeader(Pred)) {
+    COVPOINT("BlockFrequencyInfoImpl336"); if (!isLoopHeader(Pred)) {
       // If OuterLoop is an irreducible loop, we can't actually handle this.
       assert((!OuterLoop || !OuterLoop->isIrreducible()) &&
              "unhandled irreducible control flow");
@@ -643,7 +643,7 @@ BlockFrequencyInfoImplBase::printBlockFreq(raw_ostream &OS,
 }
 
 void IrreducibleGraph::addNodesInLoop(const BFIBase::LoopData &OuterLoop) {
-  Start = OuterLoop.getHeader();
+  COVPOINT("BlockFrequencyInfoImpl646"); Start = OuterLoop.getHeader();
   Nodes.reserve(OuterLoop.Nodes.size());
   for (auto N : OuterLoop.Nodes)
     addNode(N);
@@ -651,7 +651,7 @@ void IrreducibleGraph::addNodesInLoop(const BFIBase::LoopData &OuterLoop) {
 }
 
 void IrreducibleGraph::addNodesInFunction() {
-  Start = 0;
+  COVPOINT("BlockFrequencyInfoImpl654"); Start = 0;
   for (uint32_t Index = 0; Index < BFI.Working.size(); ++Index)
     if (!BFI.Working[Index].isPackaged())
       addNode(Index);
@@ -659,13 +659,13 @@ void IrreducibleGraph::addNodesInFunction() {
 }
 
 void IrreducibleGraph::indexNodes() {
-  for (auto &I : Nodes)
+  COVPOINT("BlockFrequencyInfoImpl662"); for (auto &I : Nodes)
     Lookup[I.Node.Index] = &I;
 }
 
 void IrreducibleGraph::addEdge(IrrNode &Irr, const BlockNode &Succ,
                                const BFIBase::LoopData *OuterLoop) {
-  if (OuterLoop && OuterLoop->isHeader(Succ))
+  COVPOINT("BlockFrequencyInfoImpl668"); if (OuterLoop && OuterLoop->isHeader(Succ))
     return;
   auto L = Lookup.find(Succ.Index);
   if (L == Lookup.end())
@@ -683,8 +683,8 @@ template <> struct GraphTraits<IrreducibleGraph> {
   using NodeRef = const GraphT::IrrNode *;
   using ChildIteratorType = GraphT::IrrNode::iterator;
 
-  static NodeRef getEntryNode(const GraphT &G) { return G.StartIrr; }
-  static ChildIteratorType child_begin(NodeRef N) { return N->succ_begin(); }
+  static NodeRef getEntryNode(const GraphT &G) { COVPOINT("BlockFrequencyInfoImpl686"); return G.StartIrr; }
+  static ChildIteratorType child_begin(NodeRef N) { COVPOINT("BlockFrequencyInfoImpl687"); return N->succ_begin(); }
   static ChildIteratorType child_end(NodeRef N) { return N->succ_end(); }
 };
 
@@ -700,7 +700,7 @@ static void findIrreducibleHeaders(
     const std::vector<const IrreducibleGraph::IrrNode *> &SCC,
     LoopData::NodeList &Headers, LoopData::NodeList &Others) {
   // Map from nodes in the SCC to whether it's an entry block.
-  SmallDenseMap<const IrreducibleGraph::IrrNode *, bool, 8> InSCC;
+  COVPOINT("BlockFrequencyInfoImpl703"); SmallDenseMap<const IrreducibleGraph::IrrNode *, bool, 8> InSCC;
 
   // InSCC also acts the set of nodes in the graph.  Seed it.
   for (const auto *I : SCC)
@@ -789,7 +789,7 @@ iterator_range<std::list<LoopData>::iterator>
 BlockFrequencyInfoImplBase::analyzeIrreducible(
     const IrreducibleGraph &G, LoopData *OuterLoop,
     std::list<LoopData>::iterator Insert) {
-  assert((OuterLoop == nullptr) == (Insert == Loops.begin()));
+  COVPOINT("BlockFrequencyInfoImpl792"); assert((OuterLoop == nullptr) == (Insert == Loops.begin()));
   auto Prev = OuterLoop ? std::prev(Insert) : Loops.end();
 
   for (auto I = scc_begin(G); !I.isAtEnd(); ++I) {
@@ -807,7 +807,7 @@ BlockFrequencyInfoImplBase::analyzeIrreducible(
 
 void
 BlockFrequencyInfoImplBase::updateLoopWithIrreducible(LoopData &OuterLoop) {
-  OuterLoop.Exits.clear();
+  COVPOINT("BlockFrequencyInfoImpl810"); OuterLoop.Exits.clear();
   for (auto &Mass : OuterLoop.BackedgeMass)
     Mass = BlockMass::getEmpty();
   auto O = OuterLoop.Nodes.begin() + 1;
@@ -855,7 +855,7 @@ void BlockFrequencyInfoImplBase::adjustLoopHeaderMass(LoopData &Loop) {
 }
 
 void BlockFrequencyInfoImplBase::distributeIrrLoopHeaderMass(Distribution &Dist) {
-  BlockMass LoopMass = BlockMass::getFull();
+  COVPOINT("BlockFrequencyInfoImpl858"); BlockMass LoopMass = BlockMass::getFull();
   DitheringDistributer D(Dist, LoopMass);
   for (const Weight &W : Dist.Weights) {
     BlockMass Taken = D.takeMass(W.Amount);

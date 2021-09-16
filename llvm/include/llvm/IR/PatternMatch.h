@@ -2276,7 +2276,7 @@ m_c_FMul(const LHS &L, const RHS &R) {
 
 template <typename Opnd_t> struct Signum_match {
   Opnd_t Val;
-  Signum_match(const Opnd_t &V) : Val(V) {COVPOINT_ASSERT("PatternMatchH2279");}
+  Signum_match(const Opnd_t &V) : Val(V) {COVPOINT("PatternMatchH2279");}
 
   template <typename OpTy> bool match(OpTy *V) {
     unsigned TypeSize = V->getType()->getScalarSizeInBits();

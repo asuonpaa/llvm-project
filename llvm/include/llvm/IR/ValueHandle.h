@@ -111,7 +111,7 @@ protected:
   ///
   /// This should only be used if a derived class has manually removed the
   /// handle from the use list.
-  void clearValPtr() { COVPOINT_ASSERT("ValueHandleH114"); setValPtr(nullptr); }
+  void clearValPtr() { COVPOINT("ValueHandleH114"); setValPtr(nullptr); }
 
 public:
   // Callbacks made from Value.
@@ -304,7 +304,7 @@ public:
   }
 
   ValueTy *operator->() const { return getValPtr(); }
-  ValueTy &operator*() const { COVPOINT_ASSERT("ValueHandleH307"); return *getValPtr(); }
+  ValueTy &operator*() const { COVPOINT("ValueHandleH307"); return *getValPtr(); }
 };
 
 // Treat AssertingVH<T> like T* inside maps. This also allows using find_as()
@@ -467,7 +467,7 @@ class PoisoningVH final
 
   /// Handle deletion by poisoning the handle.
   void deleted() override {
-    COVPOINT_ASSERT("ValueHandleH470"); assert(!Poisoned && "Tried to delete an already poisoned handle!");
+    COVPOINT("ValueHandleH470"); assert(!Poisoned && "Tried to delete an already poisoned handle!");
     Poisoned = true;
     RemoveFromUseList();
   }
@@ -502,7 +502,7 @@ public:
 
   ~PoisoningVH() {
     if (Poisoned) {
-      COVPOINT_ASSERT("ValueHandleH505"); clearValPtr(); }
+      COVPOINT("ValueHandleH505"); clearValPtr(); }
   }
 
   PoisoningVH &operator=(const PoisoningVH &RHS) {

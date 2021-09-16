@@ -286,7 +286,7 @@ public:
 
   Instruction *CreateSelect(Constant *C,
                             Constant *True, Constant *False) const override {
-    COVPOINT_ASSERT("NoFolderH289"); return SelectInst::Create(C, True, False);
+    COVPOINT("NoFolderH289"); return SelectInst::Create(C, True, False);
   }
 
   Instruction *CreateExtractElement(Constant *Vec,

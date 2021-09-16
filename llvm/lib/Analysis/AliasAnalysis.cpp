@@ -54,7 +54,7 @@
 #include <cassert>
 #include <functional>
 #include <iterator>
-
+#include "coverage_print.h"
 #define DEBUG_TYPE "aa"
 
 using namespace llvm;
@@ -403,8 +403,8 @@ ModRefInfo AAResults::getModRefInfo(const CallBase *Call1,
 
       if (R == Result) {
         // On early exit, not all args were checked, cannot set Must.
-        if (I + 1 != E)
-          IsMustAlias = false;
+        if (I + 1 != E) {
+          COVPOINT_ASSERT("AliasAnalysis407"); IsMustAlias = false; }
         break;
       }
     }
@@ -489,8 +489,8 @@ ModRefInfo AAResults::getModRefInfo(const LoadInst *L,
     AliasResult AR = alias(MemoryLocation::get(L), Loc, AAQI);
     if (AR == AliasResult::NoAlias)
       return ModRefInfo::NoModRef;
-    if (AR == AliasResult::MustAlias)
-      return ModRefInfo::MustRef;
+    if (AR == AliasResult::MustAlias) {
+      COVPOINT_ASSERT("AliasAnalysis493"); return ModRefInfo::MustRef; }
   }
   // Otherwise, a load just reads.
   return ModRefInfo::Ref;

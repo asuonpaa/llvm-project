@@ -59,7 +59,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <utility>
-
+#include "coverage_print.h"
 #define DEBUG_TYPE "basicaa"
 
 using namespace llvm;
@@ -294,8 +294,8 @@ static LinearExpression GetLinearExpression(
     const ExtendedValue &Val,  const DataLayout &DL, unsigned Depth,
     AssumptionCache *AC, DominatorTree *DT) {
   // Limit our recursion depth.
-  if (Depth == 6)
-    return Val;
+  if (Depth == 6) {
+    COVPOINT_ASSERT("BasicAliasAnalysis298"); return Val; }
 
   if (const ConstantInt *Const = dyn_cast<ConstantInt>(Val.V))
     return LinearExpression(Val, APInt(Val.getBitWidth(), 0),
@@ -323,8 +323,8 @@ static LinearExpression GetLinearExpression(
         // X|C == X+C if all the bits in C are unset in X.  Otherwise we can't
         // analyze it.
         if (!MaskedValueIsZero(BOp->getOperand(0), RHSC->getValue(), DL, 0, AC,
-                               BOp, DT))
-          return Val;
+                               BOp, DT)) {
+          COVPOINT_ASSERT("BasicAliasAnalysis327"); return Val; }
 
         LLVM_FALLTHROUGH;
       case Instruction::Add: {
@@ -603,7 +603,7 @@ bool BasicAAResult::pointsToConstantMemory(const MemoryLocation &Loc,
   do {
     const Value *V = getUnderlyingObject(Worklist.pop_back_val());
     if (!Visited.insert(V).second) {
-      Visited.clear();
+      COVPOINT("BasicAliasAnalysis606"); Visited.clear();
       return AAResultBase::pointsToConstantMemory(Loc, AAQI, OrLocal);
     }
 
@@ -635,7 +635,7 @@ bool BasicAAResult::pointsToConstantMemory(const MemoryLocation &Loc,
     if (const PHINode *PN = dyn_cast<PHINode>(V)) {
       // Don't bother inspecting phi nodes with many operands.
       if (PN->getNumIncomingValues() > MaxLookup) {
-        Visited.clear();
+        COVPOINT_ASSERT("BasicAliasAnalysis638"); Visited.clear();
         return AAResultBase::pointsToConstantMemory(Loc, AAQI, OrLocal);
       }
       append_range(Worklist, PN->incoming_values());
@@ -1186,8 +1186,8 @@ AliasResult BasicAAResult::aliasGEP(
     // [TotalOffset, TotalOffset+V1Size) ... [0, V2Size)
     // If -DecompGEP1.Offset >= V1Size, the accesses don't alias.
     if (AllNonPositive && V1Size.hasValue() &&
-        (-DecompGEP1.Offset).uge(V1Size.getValue()))
-      return AliasResult::NoAlias;
+        (-DecompGEP1.Offset).uge(V1Size.getValue())) {
+      COVPOINT("BasicAliasAnalysis1190"); return AliasResult::NoAlias; }
 
     if (V1Size.hasValue() && V2Size.hasValue()) {
       // Try to determine whether abs(VarIndex) > 0.
@@ -1301,8 +1301,8 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
           *Alias = MergeAliasResults(*Alias, ThisAlias);
         else
           Alias = ThisAlias;
-        if (*Alias == AliasResult::MayAlias)
-          break;
+        if (*Alias == AliasResult::MayAlias) {
+          COVPOINT_ASSERT("BasicAliasAnalysis1305"); break; }
       }
       return *Alias;
     }
@@ -1333,8 +1333,8 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
       return AliasResult::MayAlias;
     // Add the values to V1Srcs
     for (Value *PV1 : PhiValueSet) {
-      if (CheckForRecPhi(PV1))
-        continue;
+      if (CheckForRecPhi(PV1)) {
+        COVPOINT_ASSERT("BasicAliasAnalysis1337"); continue; }
       V1Srcs.push_back(PV1);
     }
   } else {
@@ -1350,7 +1350,7 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
           // that we handle the single phi case as that lets us handle LCSSA
           // phi nodes and (combined with the recursive phi handling) simple
           // pointer induction variable patterns.
-          return AliasResult::MayAlias;
+          COVPOINT_ASSERT("BasicAliasAnalysis1353"); return AliasResult::MayAlias;
         }
         OnePhi = PV1;
       }
@@ -1405,8 +1405,8 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
     return AliasResult::MayAlias;
   // With recursive phis we cannot guarantee that MustAlias/PartialAlias will
   // remain valid to all elements and needs to conservatively return MayAlias.
-  if (isRecursive && Alias != AliasResult::NoAlias)
-    return AliasResult::MayAlias;
+  if (isRecursive && Alias != AliasResult::NoAlias) {
+    COVPOINT("BasicAliasAnalysis1409"); return AliasResult::MayAlias; }
 
   // If all sources of the PHI node NoAlias or MustAlias V2, then returns
   // NoAlias / MustAlias. Otherwise, returns MayAlias.
@@ -1563,8 +1563,8 @@ AliasResult BasicAAResult::aliasCheck(const Value *V1, LocationSize V1Size,
   // Check whether a NoAlias assumption has been used, but disproven.
   bool AssumptionDisproven =
       Entry.NumAssumptionUses > 0 && Result != AliasResult::NoAlias;
-  if (AssumptionDisproven)
-    Result = AliasResult::MayAlias;
+  if (AssumptionDisproven) {
+    COVPOINT_ASSERT("BasicAliasAnalysis1567"); Result = AliasResult::MayAlias; }
 
   // This is a definitive result now, when considered as a root query.
   AAQI.NumAssumptionUses -= Entry.NumAssumptionUses;
@@ -1576,9 +1576,9 @@ AliasResult BasicAAResult::aliasCheck(const Value *V1, LocationSize V1Size,
   // If the assumption has been disproven, remove any results that may have
   // been based on this assumption. Do this after the Entry updates above to
   // avoid iterator invalidation.
-  if (AssumptionDisproven)
-    while (AAQI.AssumptionBasedResults.size() > OrigNumAssumptionBasedResults)
-      AAQI.AliasCache.erase(AAQI.AssumptionBasedResults.pop_back_val());
+  if (AssumptionDisproven) {
+    COVPOINT_ASSERT("BasicAliasAnalysis1580"); while (AAQI.AssumptionBasedResults.size() > OrigNumAssumptionBasedResults)
+      AAQI.AliasCache.erase(AAQI.AssumptionBasedResults.pop_back_val()); }
 
   // The result may still be based on assumptions higher up in the chain.
   // Remember it, so it can be purged from the cache later.
@@ -1661,8 +1661,8 @@ bool BasicAAResult::isValueEqualInPotentialCycles(const Value *V,
   // the Values cannot come from different iterations of a potential cycle the
   // phi nodes could be involved in.
   for (auto *P : VisitedPhiBBs)
-    if (isPotentiallyReachable(&P->front(), Inst, nullptr, DT))
-      return false;
+    if (isPotentiallyReachable(&P->front(), Inst, nullptr, DT)) {
+      COVPOINT_ASSERT("BasicAliasAnalysis1665"); return false; }
 
   return true;
 }

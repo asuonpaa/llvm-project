@@ -1321,7 +1321,7 @@ public:
                     bool isExact = false) {
     if (auto *LC = dyn_cast<Constant>(LHS))
       if (auto *RC = dyn_cast<Constant>(RHS)) {
-        COVPOINT_ASSERT("IRBuilderH1324"); return Insert(Folder.CreateAShr(LC, RC, isExact), Name); }
+        COVPOINT("IRBuilderH1324"); return Insert(Folder.CreateAShr(LC, RC, isExact), Name); }
     if (!isExact)
       return Insert(BinaryOperator::CreateAShr(LHS, RHS), Name);
     return Insert(BinaryOperator::CreateExactAShr(LHS, RHS), Name);
@@ -1374,7 +1374,7 @@ public:
   }
 
   Value *CreateOr(Value *LHS, const APInt &RHS, const Twine &Name = "") {
-    COVPOINT_ASSERT("IRBuilderH1377"); return CreateOr(LHS, ConstantInt::get(LHS->getType(), RHS), Name);
+    COVPOINT("IRBuilderH1377"); return CreateOr(LHS, ConstantInt::get(LHS->getType(), RHS), Name);
   }
 
   Value *CreateOr(Value *LHS, uint64_t RHS, const Twine &Name = "") {
@@ -1585,7 +1585,7 @@ public:
   /// default FMF.
   Value *CreateFNegFMF(Value *V, Instruction *FMFSource,
                        const Twine &Name = "") {
-   COVPOINT_ASSERT("IRBuilderH1588"); if (auto *VC = dyn_cast<Constant>(V))
+   COVPOINT("IRBuilderH1588"); if (auto *VC = dyn_cast<Constant>(V))
      return Insert(Folder.CreateFNeg(VC), Name);
    return Insert(setFPAttrs(UnaryOperator::CreateFNeg(V), nullptr,
                             FMFSource->getFastMathFlags()),

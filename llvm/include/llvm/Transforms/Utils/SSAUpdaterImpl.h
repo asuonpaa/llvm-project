@@ -96,7 +96,7 @@ public:
 
     // Special case: bail out if BB is unreachable.
     if (BlockList.size() == 0) {
-      COVPOINT_ASSERT("SSAUpdaterImplH99"); ValT V = Traits::GetUndefVal(BB, Updater);
+      COVPOINT("SSAUpdaterImplH99"); ValT V = Traits::GetUndefVal(BB, Updater);
       (*AvailableVals)[BB] = V;
       return V;
     }
