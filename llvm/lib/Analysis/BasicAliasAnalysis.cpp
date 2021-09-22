@@ -324,7 +324,7 @@ static LinearExpression GetLinearExpression(
         // analyze it.
         if (!MaskedValueIsZero(BOp->getOperand(0), RHSC->getValue(), DL, 0, AC,
                                BOp, DT)) {
-          COVPOINT_ASSERT("BasicAliasAnalysis327"); return Val; }
+          COVPOINT("BasicAliasAnalysis327"); return Val; }
 
         LLVM_FALLTHROUGH;
       case Instruction::Add: {

@@ -15,7 +15,7 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/PatternMatch.h"
-
+#include "coverage_print.h"
 using namespace llvm;
 
 unsigned llvm::getICmpCode(const ICmpInst *ICI, bool InvertPred) {
@@ -23,12 +23,12 @@ unsigned llvm::getICmpCode(const ICmpInst *ICI, bool InvertPred) {
                                         : ICI->getPredicate();
   switch (Pred) {
       // False -> 0
-    case ICmpInst::ICMP_UGT: return 1;  // 001
+    case ICmpInst::ICMP_UGT: COVPOINT("CmpInstAnalysis26"); return 1;  // 001
     case ICmpInst::ICMP_SGT: return 1;  // 001
     case ICmpInst::ICMP_EQ:  return 2;  // 010
     case ICmpInst::ICMP_UGE: return 3;  // 011
     case ICmpInst::ICMP_SGE: return 3;  // 011
-    case ICmpInst::ICMP_ULT: return 4;  // 100
+    case ICmpInst::ICMP_ULT: COVPOINT("CmpInstAnalysis31"); return 4;  // 100
     case ICmpInst::ICMP_SLT: return 4;  // 100
     case ICmpInst::ICMP_NE:  return 5;  // 101
     case ICmpInst::ICMP_ULE: return 6;  // 110
@@ -44,7 +44,7 @@ Constant *llvm::getPredForICmpCode(unsigned Code, bool Sign, Type *OpTy,
   switch (Code) {
     default: llvm_unreachable("Illegal ICmp code!");
     case 0: // False.
-      return ConstantInt::get(CmpInst::makeCmpResultType(OpTy), 0);
+      COVPOINT("CmpInstAnalysis47"); return ConstantInt::get(CmpInst::makeCmpResultType(OpTy), 0);
     case 1: Pred = Sign ? ICmpInst::ICMP_SGT : ICmpInst::ICMP_UGT; break;
     case 2: Pred = ICmpInst::ICMP_EQ; break;
     case 3: Pred = Sign ? ICmpInst::ICMP_SGE : ICmpInst::ICMP_UGE; break;
@@ -84,7 +84,7 @@ bool llvm::decomposeBitTestICmp(Value *LHS, Value *RHS,
     break;
   case ICmpInst::ICMP_SLE:
     // X <= -1 is equivalent to (X & SignMask) != 0.
-    if (!C->isAllOnesValue())
+    COVPOINT_ASSERT("CmpInstAnalysis87"); if (!C->isAllOnesValue())
       return false;
     Mask = APInt::getSignMask(C->getBitWidth());
     Pred = ICmpInst::ICMP_NE;
@@ -100,7 +100,7 @@ bool llvm::decomposeBitTestICmp(Value *LHS, Value *RHS,
     // X >= 0 is equivalent to (X & SignMask) == 0.
     if (!C->isNullValue())
       return false;
-    Mask = APInt::getSignMask(C->getBitWidth());
+    COVPOINT("CmpInstAnalysis103"); Mask = APInt::getSignMask(C->getBitWidth());
     Pred = ICmpInst::ICMP_EQ;
     break;
   case ICmpInst::ICMP_ULT:
@@ -112,7 +112,7 @@ bool llvm::decomposeBitTestICmp(Value *LHS, Value *RHS,
     break;
   case ICmpInst::ICMP_ULE:
     // X <=u 2^n-1 is equivalent to (X & ~(2^n-1)) == 0.
-    if (!(*C + 1).isPowerOf2())
+    COVPOINT_ASSERT("CmpInstAnalysis115"); if (!(*C + 1).isPowerOf2())
       return false;
     Mask = ~*C;
     Pred = ICmpInst::ICMP_EQ;
@@ -126,7 +126,7 @@ bool llvm::decomposeBitTestICmp(Value *LHS, Value *RHS,
     break;
   case ICmpInst::ICMP_UGE:
     // X >=u 2^n is equivalent to (X & ~(2^n-1)) != 0.
-    if (!C->isPowerOf2())
+    COVPOINT_ASSERT("CmpInstAnalysis129"); if (!C->isPowerOf2())
       return false;
     Mask = -*C;
     Pred = ICmpInst::ICMP_NE;

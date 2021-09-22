@@ -15,7 +15,7 @@
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/IR/Dominators.h"
 #include "llvm/Support/CommandLine.h"
-
+#include "coverage_print.h"
 using namespace llvm;
 
 // The max number of basic blocks explored during reachability analysis between
@@ -279,6 +279,6 @@ bool llvm::isPotentiallyReachable(
     }
   }
 
-  return isPotentiallyReachableFromMany(
+  COVPOINT("CFG282"); return isPotentiallyReachableFromMany(
       Worklist, const_cast<BasicBlock *>(B->getParent()), ExclusionSet, DT, LI);
 }

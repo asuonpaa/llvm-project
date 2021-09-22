@@ -404,7 +404,7 @@ ModRefInfo AAResults::getModRefInfo(const CallBase *Call1,
       if (R == Result) {
         // On early exit, not all args were checked, cannot set Must.
         if (I + 1 != E) {
-          COVPOINT_ASSERT("AliasAnalysis407"); IsMustAlias = false; }
+          COVPOINT("AliasAnalysis407"); IsMustAlias = false; }
         break;
       }
     }

@@ -43,7 +43,7 @@
 #include <cstdint>
 #include <iterator>
 #include <utility>
-
+#include "coverage_print.h"
 using namespace llvm;
 
 #define DEBUG_TYPE "branch-prob"
@@ -281,7 +281,7 @@ bool BranchProbabilityInfo::isLoopBackEdge(const LoopEdge &Edge) const {
 void BranchProbabilityInfo::getLoopEnterBlocks(
     const LoopBlock &LB, SmallVectorImpl<BasicBlock *> &Enters) const {
   if (LB.getLoop()) {
-    auto *Header = LB.getLoop()->getHeader();
+    COVPOINT("BranchProbabilityInfo284"); auto *Header = LB.getLoop()->getHeader();
     Enters.append(pred_begin(Header), pred_end(Header));
   } else {
     assert(LB.getSccNum() != -1 && "LB doesn't belong to any loop?");
@@ -571,7 +571,7 @@ computeUnlikelySuccessors(const BasicBlock *BB, Loop *L,
         continue;
       // First collapse InstChain
       for (Instruction *I : llvm::reverse(InstChain)) {
-        CmpLHSConst = ConstantExpr::get(I->getOpcode(), CmpLHSConst,
+        COVPOINT("BranchProbabilityInfo574"); CmpLHSConst = ConstantExpr::get(I->getOpcode(), CmpLHSConst,
                                         cast<Constant>(I->getOperand(1)), true);
         if (!CmpLHSConst)
           break;
@@ -601,7 +601,7 @@ BranchProbabilityInfo::getEstimatedBlockWeight(const BasicBlock *BB) const {
 
 Optional<uint32_t>
 BranchProbabilityInfo::getEstimatedLoopWeight(const LoopData &L) const {
-  auto WeightIt = EstimatedLoopWeight.find(L);
+  COVPOINT("BranchProbabilityInfo604"); auto WeightIt = EstimatedLoopWeight.find(L);
   if (WeightIt == EstimatedLoopWeight.end())
     return None;
   return WeightIt->second;
@@ -632,7 +632,7 @@ Optional<uint32_t> BranchProbabilityInfo::getMaxEstimatedEdgeWeight(
       MaxWeight = Weight;
   }
 
-  return MaxWeight;
+  COVPOINT("BranchProbabilityInfo635"); return MaxWeight;
 }
 
 // Updates \p LoopBB's weight and returns true. If \p LoopBB has already
@@ -706,7 +706,7 @@ void BranchProbabilityInfo::propagateEstimatedBlockWeight(
         // processed (since we propagate weight up to the top of IR each time).
         break;
     } else if (isLoopExitingEdge(Edge)) {
-      LoopWorkList.push_back(DomLoopBB);
+      COVPOINT("BranchProbabilityInfo709"); LoopWorkList.push_back(DomLoopBB);
     }
   }
 }
@@ -779,8 +779,8 @@ void BranchProbabilityInfo::computeEestimateBlockWeight(
     while (!LoopWorkList.empty()) {
       const LoopBlock LoopBB = LoopWorkList.pop_back_val();
 
-      if (EstimatedLoopWeight.count(LoopBB.getLoopData()))
-        continue;
+      if (EstimatedLoopWeight.count(LoopBB.getLoopData())) {
+        COVPOINT("BranchProbabilityInfo783"); continue; }
 
       SmallVector<BasicBlock *, 4> Exits;
       getLoopExitBlocks(LoopBB, Exits);
@@ -789,7 +789,7 @@ void BranchProbabilityInfo::computeEestimateBlockWeight(
 
       if (LoopWeight) {
         // If we never exit the loop then we can enter it once at maximum.
-        if (LoopWeight <= static_cast<uint32_t>(BlockExecWeight::UNREACHABLE))
+        COVPOINT("BranchProbabilityInfo792"); if (LoopWeight <= static_cast<uint32_t>(BlockExecWeight::UNREACHABLE))
           LoopWeight = static_cast<uint32_t>(BlockExecWeight::LOWEST_NON_ZERO);
 
         EstimatedLoopWeight.insert(
@@ -802,8 +802,8 @@ void BranchProbabilityInfo::computeEestimateBlockWeight(
     while (!BlockWorkList.empty()) {
       // We can reach here only if BlockWorkList is not empty.
       const BasicBlock *BB = BlockWorkList.pop_back_val();
-      if (EstimatedBlockWeight.count(BB))
-        continue;
+      if (EstimatedBlockWeight.count(BB)) {
+        COVPOINT("BranchProbabilityInfo806"); continue; }
 
       // We take maximum over all weights of successors. In other words we take
       // weight of "hot" path. In theory we can probably find a better function
@@ -814,9 +814,9 @@ void BranchProbabilityInfo::computeEestimateBlockWeight(
       const LoopBlock LoopBB = getLoopBlock(BB);
       auto MaxWeight = getMaxEstimatedEdgeWeight(LoopBB, successors(BB));
 
-      if (MaxWeight)
-        propagateEstimatedBlockWeight(LoopBB, DT, PDT, MaxWeight.getValue(),
-                                      BlockWorkList, LoopWorkList);
+      if (MaxWeight) {
+        COVPOINT("BranchProbabilityInfo818"); propagateEstimatedBlockWeight(LoopBB, DT, PDT, MaxWeight.getValue(),
+                                      BlockWorkList, LoopWorkList); }
     }
   } while (!BlockWorkList.empty() || !LoopWorkList.empty());
 }
@@ -861,7 +861,7 @@ bool BranchProbabilityInfo::calcEstimatedHeuristics(const BasicBlock *BB) {
         // Avoid adjustment of ZERO weight since it should remain unchanged.
         Weight != static_cast<uint32_t>(BlockExecWeight::ZERO)) {
       // 'Unlikely' blocks have twice lower weight.
-      Weight = std::max(
+      COVPOINT("BranchProbabilityInfo864"); Weight = std::max(
           static_cast<uint32_t>(BlockExecWeight::LOWEST_NON_ZERO),
           Weight.getValueOr(static_cast<uint32_t>(BlockExecWeight::DEFAULT)) /
               2);
@@ -924,8 +924,8 @@ bool BranchProbabilityInfo::calcZeroHeuristics(const BasicBlock *BB,
     return false;
 
   auto GetConstantInt = [](Value *V) {
-    if (auto *I = dyn_cast<BitCastInst>(V))
-      return dyn_cast<ConstantInt>(I->getOperand(0));
+    if (auto *I = dyn_cast<BitCastInst>(V)) {
+      COVPOINT("BranchProbabilityInfo928"); return dyn_cast<ConstantInt>(I->getOperand(0)); }
     return dyn_cast<ConstantInt>(V);
   };
 
@@ -1014,7 +1014,7 @@ bool BranchProbabilityInfo::calcZeroHeuristics(const BasicBlock *BB,
       isProb = true;
       break;
     default:
-      return false;
+      COVPOINT("BranchProbabilityInfo1017"); return false;
     }
   } else {
     return false;

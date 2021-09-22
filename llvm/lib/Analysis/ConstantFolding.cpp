@@ -58,7 +58,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-
+#include "coverage_print.h"
 using namespace llvm;
 
 namespace {
@@ -358,8 +358,8 @@ Constant *llvm::ConstantFoldLoadThroughBitcast(Constant *C, Type *DestTy,
 
     // Catch the obvious splat cases (since all-zeros can coerce non-integral
     // pointers legally).
-    if (C->isNullValue() && !DestTy->isX86_MMXTy() && !DestTy->isX86_AMXTy())
-      return Constant::getNullValue(DestTy);
+    if (C->isNullValue() && !DestTy->isX86_MMXTy() && !DestTy->isX86_AMXTy()) {
+      COVPOINT("ConstantFolding362"); return Constant::getNullValue(DestTy); }
     if (C->isAllOnesValue() &&
         (DestTy->isIntegerTy() || DestTy->isFloatingPointTy() ||
          DestTy->isVectorTy()) &&
@@ -620,8 +620,8 @@ Constant *FoldReinterpretLoadFromConstPtr(Constant *C, Type *LoadTy,
     return UndefValue::get(IntType);
 
   // If we're not accessing anything in this constant, the result is undefined.
-  if (Offset >= InitializerSize)
-    return UndefValue::get(IntType);
+  if (Offset >= InitializerSize) {
+    COVPOINT("ConstantFolding624"); return UndefValue::get(IntType); }
 
   unsigned char RawBytes[32] = {0};
   unsigned char *CurPtr = RawBytes;
@@ -1105,7 +1105,7 @@ Constant *ConstantFoldInstOperandsImpl(const Value *InstOrCE, unsigned Opcode,
   case Instruction::ExtractElement:
     return ConstantExpr::getExtractElement(Ops[0], Ops[1]);
   case Instruction::ExtractValue:
-    return ConstantExpr::getExtractValue(
+    COVPOINT_ASSERT("ConstantFolding1108"); return ConstantExpr::getExtractValue(
         Ops[0], cast<ExtractValueInst>(InstOrCE)->getIndices());
   case Instruction::InsertElement:
     return ConstantExpr::getInsertElement(Ops[0], Ops[1], Ops[2]);
@@ -1259,7 +1259,7 @@ Constant *llvm::ConstantFoldCompareInstOperands(unsigned Predicate,
   // around to know if bit truncation is happening.
   if (auto *CE0 = dyn_cast<ConstantExpr>(Ops0)) {
     if (Ops1->isNullValue()) {
-      if (CE0->getOpcode() == Instruction::IntToPtr) {
+      COVPOINT("ConstantFolding1262"); if (CE0->getOpcode() == Instruction::IntToPtr) {
         Type *IntPtrTy = DL.getIntPtrType(CE0->getType());
         // Convert the integer value to the right size to ensure we get the
         // proper extension or truncation.
@@ -1411,8 +1411,8 @@ Constant *llvm::ConstantFoldCastOperand(unsigned Opcode, Constant *C,
 
 Constant *llvm::ConstantFoldLoadThroughGEPConstantExpr(Constant *C,
                                                        ConstantExpr *CE) {
-  if (!CE->getOperand(1)->isNullValue())
-    return nullptr;  // Do not allow stepping over the value!
+  if (!CE->getOperand(1)->isNullValue()) {
+    COVPOINT("ConstantFolding1415"); return nullptr; }  // Do not allow stepping over the value!
 
   // Loop over all of the operands, tracking down which value we are
   // addressing.
@@ -1827,7 +1827,7 @@ static bool getConstIntOrUndef(Value *Op, const APInt *&C) {
     return true;
   }
   if (isa<UndefValue>(Op)) {
-    C = nullptr;
+    COVPOINT("ConstantFolding1830"); C = nullptr;
     return true;
   }
   return false;
@@ -1856,13 +1856,13 @@ static Constant *ConstantFoldScalarCall1(StringRef Name,
     if (IntrinsicID == Intrinsic::cos ||
         IntrinsicID == Intrinsic::ctpop ||
         IntrinsicID == Intrinsic::fptoui_sat ||
-        IntrinsicID == Intrinsic::fptosi_sat)
-      return Constant::getNullValue(Ty);
+        IntrinsicID == Intrinsic::fptosi_sat) {
+      COVPOINT_ASSERT("ConstantFolding1860"); return Constant::getNullValue(Ty); }
     if (IntrinsicID == Intrinsic::bswap ||
         IntrinsicID == Intrinsic::bitreverse ||
         IntrinsicID == Intrinsic::launder_invariant_group ||
-        IntrinsicID == Intrinsic::strip_invariant_group)
-      return Operands[0];
+        IntrinsicID == Intrinsic::strip_invariant_group) {
+      COVPOINT_ASSERT("ConstantFolding1865"); return Operands[0]; }
   }
 
   if (isa<ConstantPointerNull>(Operands[0])) {
@@ -2351,10 +2351,10 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
     case Intrinsic::maximum:
     case Intrinsic::minimum:
       // If one argument is undef, return the other argument.
-      if (IsOp0Undef)
-        return Operands[1];
-      if (IsOp1Undef)
-        return Operands[0];
+      if (IsOp0Undef) {
+        COVPOINT_ASSERT("ConstantFolding2355"); return Operands[1]; }
+      if (IsOp1Undef) {
+        COVPOINT_ASSERT("ConstantFolding2356"); return Operands[0]; }
       break;
     }
   }
@@ -2476,7 +2476,7 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
         return ConstantFP::get(Ty->getContext(), Result);
       }
     }
-    return nullptr;
+    COVPOINT_ASSERT("ConstantFolding2479"); return nullptr;
   }
 
   if (Operands[0]->getType()->isIntegerTy() &&
@@ -2490,29 +2490,29 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
     switch (IntrinsicID) {
     default: break;
     case Intrinsic::smax:
-      if (!C0 && !C1)
-        return UndefValue::get(Ty);
-      if (!C0 || !C1)
-        return ConstantInt::get(Ty, APInt::getSignedMaxValue(BitWidth));
+      if (!C0 && !C1) {
+        COVPOINT_ASSERT("ConstantFolding2494"); return UndefValue::get(Ty); }
+      if (!C0 || !C1) {
+        COVPOINT("ConstantFolding2496"); return ConstantInt::get(Ty, APInt::getSignedMaxValue(BitWidth)); }
       return ConstantInt::get(Ty, C0->sgt(*C1) ? *C0 : *C1);
 
     case Intrinsic::smin:
-      if (!C0 && !C1)
-        return UndefValue::get(Ty);
-      if (!C0 || !C1)
-        return ConstantInt::get(Ty, APInt::getSignedMinValue(BitWidth));
+      if (!C0 && !C1) {
+        COVPOINT_ASSERT("ConstantFolding2501"); return UndefValue::get(Ty); }
+      if (!C0 || !C1) {
+        COVPOINT_ASSERT("ConstantFolding2503"); return ConstantInt::get(Ty, APInt::getSignedMinValue(BitWidth)); }
       return ConstantInt::get(Ty, C0->slt(*C1) ? *C0 : *C1);
 
     case Intrinsic::umax:
-      if (!C0 && !C1)
-        return UndefValue::get(Ty);
-      if (!C0 || !C1)
-        return ConstantInt::get(Ty, APInt::getMaxValue(BitWidth));
+      if (!C0 && !C1) {
+        COVPOINT_ASSERT("ConstantFolding2508"); return UndefValue::get(Ty); }
+      if (!C0 || !C1) {
+        COVPOINT_ASSERT("ConstantFolding2510"); return ConstantInt::get(Ty, APInt::getMaxValue(BitWidth)); }
       return ConstantInt::get(Ty, C0->ugt(*C1) ? *C0 : *C1);
 
     case Intrinsic::umin:
-      if (!C0 && !C1)
-        return UndefValue::get(Ty);
+      if (!C0 && !C1) {
+        COVPOINT_ASSERT("ConstantFolding2515"); return UndefValue::get(Ty); }
       if (!C0 || !C1)
         return ConstantInt::get(Ty, APInt::getMinValue(BitWidth));
       return ConstantInt::get(Ty, C0->ult(*C1) ? *C0 : *C1);
@@ -2521,14 +2521,14 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
     case Intrinsic::ssub_with_overflow:
       // X - undef -> { 0, false }
       // undef - X -> { 0, false }
-      if (!C0 || !C1)
+      COVPOINT_ASSERT("ConstantFolding2524"); if (!C0 || !C1)
         return Constant::getNullValue(Ty);
       LLVM_FALLTHROUGH;
     case Intrinsic::uadd_with_overflow:
     case Intrinsic::sadd_with_overflow:
       // X + undef -> { -1, false }
       // undef + x -> { -1, false }
-      if (!C0 || !C1) {
+      COVPOINT("ConstantFolding2531"); if (!C0 || !C1) {
         return ConstantStruct::get(
             cast<StructType>(Ty),
             {Constant::getAllOnesValue(Ty->getStructElementType(0)),
@@ -2539,7 +2539,7 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
     case Intrinsic::umul_with_overflow: {
       // undef * X -> { 0, false }
       // X * undef -> { 0, false }
-      if (!C0 || !C1)
+      COVPOINT("ConstantFolding2542"); if (!C0 || !C1)
         return Constant::getNullValue(Ty);
 
       APInt Res;
@@ -2607,7 +2607,7 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
 
     case Intrinsic::abs:
       // Undef or minimum val operand with poison min --> undef
-      assert(C1 && "Must be constant int");
+      COVPOINT_ASSERT("ConstantFolding2610"); assert(C1 && "Must be constant int");
       if (C1->isOneValue() && (!C0 || C0->isMinSignedValue()))
         return UndefValue::get(Ty);
 
@@ -2975,13 +2975,13 @@ static Constant *ConstantFoldVectorCall(StringRef Name,
     for (unsigned J = 0, JE = Operands.size(); J != JE; ++J) {
       // Some intrinsics use a scalar type for certain arguments.
       if (hasVectorInstrinsicScalarOpd(IntrinsicID, J)) {
-        Lane[J] = Operands[J];
+        COVPOINT("ConstantFolding2978"); Lane[J] = Operands[J];
         continue;
       }
 
       Constant *Agg = Operands[J]->getAggregateElement(I);
-      if (!Agg)
-        return nullptr;
+      if (!Agg) {
+        COVPOINT_ASSERT("ConstantFolding2984"); return nullptr; }
 
       Lane[J] = Agg;
     }
