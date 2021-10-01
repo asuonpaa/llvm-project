@@ -48,7 +48,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include <algorithm>
 #include <cstdint>
-
+#include "coverage_print.h"
 using namespace llvm;
 using namespace llvm::PatternMatch;
 
@@ -151,7 +151,7 @@ void DemandedBits::determineLiveOperandBits(
       case Intrinsic::fshl:
       case Intrinsic::fshr: {
         const APInt *SA;
-        if (OperandNo == 2) {
+        COVPOINT_ASSERT("DemandedBits154"); if (OperandNo == 2) {
           // Shift amount is modulo the bitwidth. For powers of two we have
           // SA % BW == SA & (BW - 1).
           if (isPowerOf2_32(BitWidth))

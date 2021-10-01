@@ -1662,7 +1662,7 @@ bool BasicAAResult::isValueEqualInPotentialCycles(const Value *V,
   // phi nodes could be involved in.
   for (auto *P : VisitedPhiBBs)
     if (isPotentiallyReachable(&P->front(), Inst, nullptr, DT)) {
-      COVPOINT_ASSERT("BasicAliasAnalysis1665"); return false; }
+      COVPOINT("BasicAliasAnalysis1665"); return false; }
 
   return true;
 }

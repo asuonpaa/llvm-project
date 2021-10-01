@@ -1105,7 +1105,7 @@ Constant *ConstantFoldInstOperandsImpl(const Value *InstOrCE, unsigned Opcode,
   case Instruction::ExtractElement:
     return ConstantExpr::getExtractElement(Ops[0], Ops[1]);
   case Instruction::ExtractValue:
-    COVPOINT_ASSERT("ConstantFolding1108"); return ConstantExpr::getExtractValue(
+    COVPOINT("ConstantFolding1108"); return ConstantExpr::getExtractValue(
         Ops[0], cast<ExtractValueInst>(InstOrCE)->getIndices());
   case Instruction::InsertElement:
     return ConstantExpr::getInsertElement(Ops[0], Ops[1], Ops[2]);
