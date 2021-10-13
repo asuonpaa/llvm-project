@@ -193,7 +193,7 @@ static void combineWeightsByHashing(WeightList &Weights) {
     return;
 
   // Fill in the new weights.
-  COVPOINT_ASSERT("BlockFrequencyInfoImpl196"); Weights.clear();
+  COVPOINT("BlockFrequencyInfoImpl196"); Weights.clear();
   Weights.reserve(Combined.size());
   for (const auto &I : Combined)
     Weights.push_back(I.second);

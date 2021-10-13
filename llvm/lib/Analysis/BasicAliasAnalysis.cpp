@@ -635,7 +635,7 @@ bool BasicAAResult::pointsToConstantMemory(const MemoryLocation &Loc,
     if (const PHINode *PN = dyn_cast<PHINode>(V)) {
       // Don't bother inspecting phi nodes with many operands.
       if (PN->getNumIncomingValues() > MaxLookup) {
-        COVPOINT_ASSERT("BasicAliasAnalysis638"); Visited.clear();
+        COVPOINT("BasicAliasAnalysis638"); Visited.clear();
         return AAResultBase::pointsToConstantMemory(Loc, AAQI, OrLocal);
       }
       append_range(Worklist, PN->incoming_values());
@@ -1350,7 +1350,7 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
           // that we handle the single phi case as that lets us handle LCSSA
           // phi nodes and (combined with the recursive phi handling) simple
           // pointer induction variable patterns.
-          COVPOINT_ASSERT("BasicAliasAnalysis1353"); return AliasResult::MayAlias;
+          COVPOINT("BasicAliasAnalysis1353"); return AliasResult::MayAlias;
         }
         OnePhi = PV1;
       }

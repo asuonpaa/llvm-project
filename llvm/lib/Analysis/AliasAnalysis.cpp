@@ -490,7 +490,7 @@ ModRefInfo AAResults::getModRefInfo(const LoadInst *L,
     if (AR == AliasResult::NoAlias)
       return ModRefInfo::NoModRef;
     if (AR == AliasResult::MustAlias) {
-      COVPOINT_ASSERT("AliasAnalysis493"); return ModRefInfo::MustRef; }
+      COVPOINT("AliasAnalysis493"); return ModRefInfo::MustRef; }
   }
   // Otherwise, a load just reads.
   return ModRefInfo::Ref;

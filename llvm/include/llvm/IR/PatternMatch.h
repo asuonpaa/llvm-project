@@ -1948,7 +1948,7 @@ struct UAddWithOverflow_match {
     //  b > u (a ^ -1)
     if (Pred == ICmpInst::ICMP_UGT) {
       if (XorExpr.match(ICmpRHS)) {
-        COVPOINT_ASSERT("PatternMatchH1951"); return L.match(Op1) && R.match(ICmpLHS) && S.match(ICmpRHS); }
+        COVPOINT("PatternMatchH1951"); return L.match(Op1) && R.match(ICmpLHS) && S.match(ICmpRHS); }
     }
 
     // Match special-case for increment-by-1.

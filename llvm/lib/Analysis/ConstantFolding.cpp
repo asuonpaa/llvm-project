@@ -2354,7 +2354,7 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
       if (IsOp0Undef) {
         COVPOINT_ASSERT("ConstantFolding2355"); return Operands[1]; }
       if (IsOp1Undef) {
-        COVPOINT_ASSERT("ConstantFolding2356"); return Operands[0]; }
+        COVPOINT("ConstantFolding2356"); return Operands[0]; }
       break;
     }
   }
@@ -2521,7 +2521,7 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
     case Intrinsic::ssub_with_overflow:
       // X - undef -> { 0, false }
       // undef - X -> { 0, false }
-      COVPOINT_ASSERT("ConstantFolding2524"); if (!C0 || !C1)
+      COVPOINT("ConstantFolding2524"); if (!C0 || !C1)
         return Constant::getNullValue(Ty);
       LLVM_FALLTHROUGH;
     case Intrinsic::uadd_with_overflow:
@@ -2981,7 +2981,7 @@ static Constant *ConstantFoldVectorCall(StringRef Name,
 
       Constant *Agg = Operands[J]->getAggregateElement(I);
       if (!Agg) {
-        COVPOINT_ASSERT("ConstantFolding2984"); return nullptr; }
+        COVPOINT("ConstantFolding2984"); return nullptr; }
 
       Lane[J] = Agg;
     }

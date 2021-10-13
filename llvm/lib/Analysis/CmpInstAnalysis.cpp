@@ -84,7 +84,7 @@ bool llvm::decomposeBitTestICmp(Value *LHS, Value *RHS,
     break;
   case ICmpInst::ICMP_SLE:
     // X <= -1 is equivalent to (X & SignMask) != 0.
-    COVPOINT_ASSERT("CmpInstAnalysis87"); if (!C->isAllOnesValue())
+    COVPOINT("CmpInstAnalysis87"); if (!C->isAllOnesValue())
       return false;
     Mask = APInt::getSignMask(C->getBitWidth());
     Pred = ICmpInst::ICMP_NE;

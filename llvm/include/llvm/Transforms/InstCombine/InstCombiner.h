@@ -251,7 +251,7 @@ public:
           BO->getOpcode() == Instruction::Sub)
         if (isa<Constant>(BO->getOperand(0)) ||
             isa<Constant>(BO->getOperand(1))) {
-          COVPOINT_ASSERT("InstCombinerH254"); return WillInvertAllUses; }
+          COVPOINT("InstCombinerH254"); return WillInvertAllUses; }
 
     // Selects with invertible operands are freely invertible
     if (match(V,
@@ -304,7 +304,7 @@ public:
   static Constant *
   getSafeVectorConstantForBinop(BinaryOperator::BinaryOps Opcode, Constant *In,
                                 bool IsRHSConstant) {
-    COVPOINT_ASSERT("InstCombinerH307"); auto *InVTy = cast<FixedVectorType>(In->getType());
+    COVPOINT("InstCombinerH307"); auto *InVTy = cast<FixedVectorType>(In->getType());
 
     Type *EltTy = InVTy->getElementType();
     auto *SafeC = ConstantExpr::getBinOpIdentity(Opcode, EltTy, IsRHSConstant);
