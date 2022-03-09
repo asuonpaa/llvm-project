@@ -56,7 +56,7 @@
 #include <iterator>
 #include <memory>
 #include <utility>
-
+#include "coverage_print.h"
 using namespace llvm;
 
 #define DEBUG_TYPE "memoryssa"
@@ -1641,9 +1641,9 @@ void MemorySSA::insertIntoListsBefore(MemoryAccess *What, const BasicBlock *BB,
     if (WasEnd) {
       Defs->push_back(*What);
     } else if (isa<MemoryDef>(InsertPt)) {
-      Defs->insert(InsertPt->getDefsIterator(), *What);
+      COVPOINT("MemorySSA1644"); Defs->insert(InsertPt->getDefsIterator(), *What);
     } else {
-      while (InsertPt != Accesses->end() && !isa<MemoryDef>(InsertPt))
+      COVPOINT("MemorySSA1646"); while (InsertPt != Accesses->end() && !isa<MemoryDef>(InsertPt))
         ++InsertPt;
       // Either we found a def, or we are inserting at the end
       if (InsertPt == Accesses->end())

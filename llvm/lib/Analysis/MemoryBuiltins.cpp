@@ -44,7 +44,7 @@
 #include <cstdint>
 #include <iterator>
 #include <utility>
-
+#include "coverage_print.h"
 using namespace llvm;
 
 #define DEBUG_TYPE "memory-builtins"
@@ -815,7 +815,7 @@ SizeOffsetType ObjectSizeOffsetVisitor::visitLoadInst(LoadInst&) {
 
 SizeOffsetType ObjectSizeOffsetVisitor::visitPHINode(PHINode&) {
   // too complex to analyze statically.
-  return unknown();
+  COVPOINT("MemoryBuiltins818"); return unknown();
 }
 
 SizeOffsetType ObjectSizeOffsetVisitor::visitSelectInst(SelectInst &I) {

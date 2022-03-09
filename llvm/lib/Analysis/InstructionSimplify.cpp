@@ -825,7 +825,7 @@ static Value *SimplifySubInst(Value *Op0, Value *Op1, bool isNSW, bool isNUW,
       match(Op1, m_Trunc(m_Value(Y))))
     if (X->getType() == Y->getType()) {
       // See if "V === X - Y" simplifies.
-      COVPOINT_ASSERT("InstructionSimplify828"); if (Value *V = SimplifyBinOp(Instruction::Sub, X, Y, Q, MaxRecurse-1))
+      COVPOINT("InstructionSimplify828"); if (Value *V = SimplifyBinOp(Instruction::Sub, X, Y, Q, MaxRecurse-1))
         // It does!  Now see if "trunc V" simplifies.
         if (Value *W = SimplifyCastInst(Instruction::Trunc, V, Op0->getType(),
                                         Q, MaxRecurse - 1))
@@ -953,7 +953,7 @@ static Value *simplifyDivRem(Value *Op0, Value *Op1, bool IsDiv,
   // undef / X -> 0
   // undef % X -> 0
   if (Q.isUndefValue(Op0)) {
-    COVPOINT_ASSERT("InstructionSimplify956"); return Constant::getNullValue(Ty); }
+    COVPOINT("InstructionSimplify956"); return Constant::getNullValue(Ty); }
 
   // 0 / X -> 0
   // 0 % X -> 0
@@ -1944,7 +1944,7 @@ static Value *simplifyAndOrOfCmps(const SimplifyQuery &Q,
   if (auto *C = dyn_cast<Constant>(V))
     return ConstantExpr::getCast(Cast0->getOpcode(), C, Cast0->getType());
 
-  COVPOINT_ASSERT("InstructionSimplify1947"); return nullptr;
+  COVPOINT("InstructionSimplify1947"); return nullptr;
 }
 
 /// Check that the Op1 is in expected form, i.e.:
@@ -2152,7 +2152,7 @@ static Value *SimplifyAndInst(Value *Op0, Value *Op1, const SimplifyQuery &Q,
       if (match(Op1, m_Select(m_Specific(Op0), m_Value(), m_Zero())))
         return Op1;
       else if (match(Op0, m_Select(m_Specific(Op1), m_Value(), m_Zero()))) {
-        COVPOINT_ASSERT("InstructionSimplify2155"); return Op0; }
+        COVPOINT("InstructionSimplify2155"); return Op0; }
     }
     // If the operation is with the result of a select instruction, check
     // whether operating on either branch of the select always yields the same
@@ -2718,7 +2718,7 @@ static Value *simplifyICmpOfBools(CmpInst::Predicate Pred, Value *LHS,
 
     case CmpInst::ICMP_ULE: // X <=u  1 -> true
     case CmpInst::ICMP_SGE: // X >=s -1 -> true
-      COVPOINT_ASSERT("InstructionSimplify2721"); return getTrue(ITy);
+      COVPOINT("InstructionSimplify2721"); return getTrue(ITy);
 
     default: break;
     }
@@ -2778,7 +2778,7 @@ static Value *simplifyICmpWithZero(CmpInst::Predicate Pred, Value *LHS,
   case ICmpInst::ICMP_SLT: {
     KnownBits LHSKnown = computeKnownBits(LHS, Q.DL, 0, Q.AC, Q.CxtI, Q.DT);
     if (LHSKnown.isNegative()) {
-      COVPOINT_ASSERT("InstructionSimplify2781"); return getTrue(ITy); }
+      COVPOINT("InstructionSimplify2781"); return getTrue(ITy); }
     if (LHSKnown.isNonNegative())
       return getFalse(ITy);
     break;
@@ -3166,7 +3166,7 @@ static Value *simplifyICmpWithBinOp(CmpInst::Predicate Pred, Value *LHS,
       break;
     case Instruction::AShr:
       if (!Q.IIQ.isExact(LBO) || !Q.IIQ.isExact(RBO)) {
-        COVPOINT_ASSERT("InstructionSimplify3169"); break; }
+        COVPOINT("InstructionSimplify3169"); break; }
       if (Value *V = SimplifyICmpInst(Pred, LBO->getOperand(0),
                                       RBO->getOperand(0), Q, MaxRecurse - 1))
         return V;
@@ -3233,7 +3233,7 @@ static Value *simplifyICmpWithMinMax(CmpInst::Predicate Pred, Value *LHS,
     // Cases correspond to "max(A, B) p A".
     switch (P) {
     default:
-      COVPOINT_ASSERT("InstructionSimplify3236"); break;
+      COVPOINT("InstructionSimplify3236"); break;
     case CmpInst::ICMP_EQ:
     case CmpInst::ICMP_SLE:
       // Equivalent to "A EqP B".  This may be the same as the condition tested
@@ -3456,7 +3456,7 @@ static Value *SimplifyICmpInst(unsigned Predicate, Value *LHS, Value *RHS,
       if (LHS_CR.icmp(Pred, RHS_CR))
         return ConstantInt::getTrue(RHS->getContext());
 
-      COVPOINT_ASSERT("InstructionSimplify3459"); if (LHS_CR.icmp(CmpInst::getInversePredicate(Pred), RHS_CR))
+      COVPOINT("InstructionSimplify3459"); if (LHS_CR.icmp(CmpInst::getInversePredicate(Pred), RHS_CR))
         return ConstantInt::getFalse(RHS->getContext());
     }
   }
@@ -3788,7 +3788,7 @@ static Value *SimplifyFCmpInst(unsigned Predicate, Value *LHS, Value *RHS,
         switch (Pred) {
         case FCmpInst::FCMP_OGT:
           // No value is ordered and greater than infinity.
-          COVPOINT_ASSERT("InstructionSimplify3791"); return getFalse(RetTy);
+          COVPOINT("InstructionSimplify3791"); return getFalse(RetTy);
         case FCmpInst::FCMP_ULE:
           // All values are unordered with and at most infinity.
           return getTrue(RetTy);
@@ -5495,7 +5495,7 @@ static Value *simplifyBinaryIntrinsic(Function *F, Value *Op0, Value *Op1,
 
     // Assume undef is the limit value.
     if (Q.isUndefValue(Op1)) {
-      COVPOINT_ASSERT("InstructionSimplify5498"); return ConstantInt::get(ReturnType, getMaxMinLimit(IID, BitWidth)); }
+      COVPOINT("InstructionSimplify5498"); return ConstantInt::get(ReturnType, getMaxMinLimit(IID, BitWidth)); }
 
     const APInt *C;
     if (match(Op1, m_APIntAllowUndef(C))) {

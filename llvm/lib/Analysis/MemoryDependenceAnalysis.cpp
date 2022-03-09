@@ -59,7 +59,7 @@
 #include <cstdint>
 #include <iterator>
 #include <utility>
-
+#include "coverage_print.h"
 using namespace llvm;
 
 #define DEBUG_TYPE "memdep"

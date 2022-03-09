@@ -10,7 +10,7 @@
 // information.
 //
 //===----------------------------------------------------------------------===//
-
+#include "coverage_print.h"
 #include "llvm/Analysis/LazyValueInfo.h"
 #include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/Optional.h"
@@ -109,8 +109,8 @@ static ValueLatticeElement intersect(const ValueLatticeElement &A,
     return A;
 
   // Can't get any more precise than constants.
-  if (hasSingleValue(A))
-    return A;
+  if (hasSingleValue(A)) {
+    COVPOINT("LazyValueInfo113"); return A; }
   if (hasSingleValue(B))
     return B;
 
@@ -1009,8 +1009,8 @@ Optional<ValueLatticeElement> LazyValueInfoImpl::solveBlockValueIntrinsic(
 Optional<ValueLatticeElement> LazyValueInfoImpl::solveBlockValueExtractValue(
     ExtractValueInst *EVI, BasicBlock *BB) {
   if (auto *WO = dyn_cast<WithOverflowInst>(EVI->getAggregateOperand()))
-    if (EVI->getNumIndices() == 1 && *EVI->idx_begin() == 0)
-      return solveBlockValueOverflowIntrinsic(WO, BB);
+    if (EVI->getNumIndices() == 1 && *EVI->idx_begin() == 0) {
+      COVPOINT("LazyValueInfo1013"); return solveBlockValueOverflowIntrinsic(WO, BB); }
 
   // Handle extractvalue of insertvalue to allow further simplification
   // based on replaced with.overflow intrinsics.
@@ -1065,8 +1065,8 @@ static ValueLatticeElement getValueFromSimpleICmpCondition(
   if (ConstantInt *CI = dyn_cast<ConstantInt>(RHS))
     RHSRange = ConstantRange(CI->getValue());
   else if (Instruction *I = dyn_cast<Instruction>(RHS))
-    if (auto *Ranges = I->getMetadata(LLVMContext::MD_range))
-      RHSRange = getConstantRangeFromMetadata(*Ranges);
+    if (auto *Ranges = I->getMetadata(LLVMContext::MD_range)) {
+      COVPOINT("LazyValueInfo1069"); RHSRange = getConstantRangeFromMetadata(*Ranges); }
 
   ConstantRange TrueValues =
       ConstantRange::makeAllowedICmpRegion(Pred, RHSRange);
@@ -1252,7 +1252,7 @@ static ValueLatticeElement constantFoldUser(User *Usr, Value *Op,
     assert(cast<FreezeInst>(Usr)->getOperand(0) == Op && "Operand 0 isn't Op");
     return ValueLatticeElement::getRange(ConstantRange(OpConstVal));
   }
-  return ValueLatticeElement::getOverdefined();
+  COVPOINT("LazyValueInfo1255"); return ValueLatticeElement::getOverdefined();
 }
 
 /// Compute the value of Val on the edge BBFrom -> BBTo. Returns false if
@@ -1358,8 +1358,8 @@ static Optional<ValueLatticeElement> getEdgeValueLocal(Value *Val,
         const DataLayout &DL = BBTo->getModule()->getDataLayout();
         ValueLatticeElement EdgeLatticeVal =
             constantFoldUser(Usr, Condition, CaseValue, DL);
-        if (EdgeLatticeVal.isOverdefined())
-          return None;
+        if (EdgeLatticeVal.isOverdefined()) {
+          COVPOINT("LazyValueInfo1362"); return None; }
         EdgeVal = EdgeLatticeVal.getConstantRange();
       }
       if (DefaultCase) {
@@ -1599,8 +1599,8 @@ Constant *LazyValueInfo::getConstantOnEdge(Value *V, BasicBlock *FromBB,
   ValueLatticeElement Result =
       getImpl(PImpl, AC, M).getValueOnEdge(V, FromBB, ToBB, CxtI);
 
-  if (Result.isConstant())
-    return Result.getConstant();
+  if (Result.isConstant()) {
+    COVPOINT("LazyValueInfo1603"); return Result.getConstant(); }
   if (Result.isConstantRange()) {
     const ConstantRange &CR = Result.getConstantRange();
     if (const APInt *SingleVal = CR.getSingleElement())
@@ -1783,8 +1783,8 @@ LazyValueInfo::getPredicateAt(unsigned Pred, Value *V, Constant *C,
           if (Baseline == Unknown)
             break;
         }
-        if (Baseline != Unknown)
-          return Baseline;
+        if (Baseline != Unknown) {
+          COVPOINT("LazyValueInfo1787"); return Baseline; }
       }
 
     // For a comparison where the V is outside this block, it's possible
@@ -1804,7 +1804,7 @@ LazyValueInfo::getPredicateAt(unsigned Pred, Value *V, Constant *C,
         }
         // If we terminated early, then one of the values didn't match.
         if (PI == PE) {
-          return Baseline;
+          COVPOINT("LazyValueInfo1807"); return Baseline;
         }
       }
     }

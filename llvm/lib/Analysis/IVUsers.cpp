@@ -10,7 +10,7 @@
 // computed from induction variables.
 //
 //===----------------------------------------------------------------------===//
-
+#include "coverage_print.h"
 #include "llvm/Analysis/IVUsers.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Analysis/AssumptionCache.h"
@@ -222,8 +222,8 @@ bool IVUsers::AddUsersImpl(Instruction *I,
       unsigned ValNo = PHINode::getIncomingValueNumForOperand(OperandNo);
       UseBB = PHI->getIncomingBlock(ValNo);
     }
-    if (!isSimplifiedLoopNest(UseBB, DT, LI, SimpleLoopNests))
-      return false;
+    if (!isSimplifiedLoopNest(UseBB, DT, LI, SimpleLoopNests)) {
+      COVPOINT_ASSERT("IVUsers226"); return false; }
 
     // Descend recursively, but not into PHI nodes outside the current loop.
     // It's important to see the entire expression outside the loop to get
@@ -274,7 +274,7 @@ bool IVUsers::AddUsersImpl(Instruction *I,
         // If we normalized the expression, but denormalization doesn't give the
         // original one, discard this user.
         if (OriginalISE != DenormalizedISE) {
-          LLVM_DEBUG(dbgs()
+          COVPOINT("IVUsers277"); LLVM_DEBUG(dbgs()
                      << "   DISCARDING (NORMALIZATION ISN'T INVERTIBLE): "
                      << *ISE << '\n');
           IVUses.pop_back();
@@ -396,17 +396,17 @@ static const SCEVAddRecExpr *findAddRecForLoop(const SCEV *S, const Loop *L) {
   if (const SCEVAddRecExpr *AR = dyn_cast<SCEVAddRecExpr>(S)) {
     if (AR->getLoop() == L)
       return AR;
-    return findAddRecForLoop(AR->getStart(), L);
+    COVPOINT("IVUsers399"); return findAddRecForLoop(AR->getStart(), L);
   }
 
   if (const SCEVAddExpr *Add = dyn_cast<SCEVAddExpr>(S)) {
     for (const auto *Op : Add->operands())
-      if (const SCEVAddRecExpr *AR = findAddRecForLoop(Op, L))
-        return AR;
+      if (const SCEVAddRecExpr *AR = findAddRecForLoop(Op, L)) {
+        COVPOINT("IVUsers405"); return AR; }
     return nullptr;
   }
 
-  return nullptr;
+  COVPOINT("IVUsers409"); return nullptr;
 }
 
 const SCEV *IVUsers::getStride(const IVStrideUse &IU, const Loop *L) const {

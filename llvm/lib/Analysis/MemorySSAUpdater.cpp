@@ -27,7 +27,7 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/FormattedStream.h"
 #include <algorithm>
-
+#include "coverage_print.h"
 #define DEBUG_TYPE "memoryssa"
 using namespace llvm;
 
@@ -215,8 +215,8 @@ template <class RangeType>
 MemoryAccess *MemorySSAUpdater::tryRemoveTrivialPhi(MemoryPhi *Phi,
                                                     RangeType &Operands) {
   // Bail out on non-opt Phis.
-  if (NonOptPhis.count(Phi))
-    return Phi;
+  if (NonOptPhis.count(Phi)) {
+    COVPOINT("MemorySSAUpdater219"); return Phi; }
 
   // Detect equal or self arguments
   MemoryAccess *Same = nullptr;
@@ -271,7 +271,7 @@ void MemorySSAUpdater::insertUse(MemoryUse *MU, bool RenameUses) {
     BasicBlock *StartBlock = MU->getBlock();
 
     if (auto *Defs = MSSA->getWritableBlockDefs(StartBlock)) {
-      MemoryAccess *FirstDef = &*Defs->begin();
+      COVPOINT("MemorySSAUpdater274"); MemoryAccess *FirstDef = &*Defs->begin();
       // Convert to incoming value if it's a memorydef. A phi *is* already an
       // incoming value.
       if (auto *MD = dyn_cast<MemoryDef>(FirstDef))
@@ -282,8 +282,8 @@ void MemorySSAUpdater::insertUse(MemoryUse *MU, bool RenameUses) {
     // We just inserted a phi into this block, so the incoming value will
     // become the phi anyway, so it does not matter what we pass.
     for (auto &MP : InsertedPHIs)
-      if (MemoryPhi *Phi = cast_or_null<MemoryPhi>(MP))
-        MSSA->renamePass(Phi->getBlock(), nullptr, Visited);
+      if (MemoryPhi *Phi = cast_or_null<MemoryPhi>(MP)) {
+        COVPOINT_ASSERT("MemorySSAUpdater286"); MSSA->renamePass(Phi->getBlock(), nullptr, Visited); }
   }
 }
 
@@ -425,8 +425,8 @@ void MemorySSAUpdater::insertDef(MemoryDef *MD, bool RenameUses) {
 
   // Optimize potentially non-minimal phis added in this method.
   unsigned NewPhiSize = NewPhiIndexEnd - NewPhiIndex;
-  if (NewPhiSize)
-    tryRemoveTrivialPhis(ArrayRef<WeakVH>(&InsertedPHIs[NewPhiIndex], NewPhiSize));
+  if (NewPhiSize) {
+    COVPOINT("MemorySSAUpdater429"); tryRemoveTrivialPhis(ArrayRef<WeakVH>(&InsertedPHIs[NewPhiIndex], NewPhiSize)); }
 
   // Now that all fixups are done, rename all uses if we are asked. Skip
   // renaming for defs in unreachable blocks.
@@ -445,7 +445,7 @@ void MemorySSAUpdater::insertDef(MemoryDef *MD, bool RenameUses) {
     // We just inserted a phi into this block, so the incoming value will become
     // the phi anyway, so it does not matter what we pass.
     for (auto &MP : InsertedPHIs) {
-      MemoryPhi *Phi = dyn_cast_or_null<MemoryPhi>(MP);
+      COVPOINT("MemorySSAUpdater448"); MemoryPhi *Phi = dyn_cast_or_null<MemoryPhi>(MP);
       if (Phi)
         MSSA->renamePass(Phi->getBlock(), nullptr, Visited);
     }
@@ -471,8 +471,8 @@ void MemorySSAUpdater::fixupDefs(const SmallVectorImpl<WeakVH> &Vars) {
     auto DefIter = NewDef->getDefsIterator();
 
     // The temporary Phi is being fixed, unmark it for not to optimize.
-    if (MemoryPhi *Phi = dyn_cast<MemoryPhi>(NewDef))
-      NonOptPhis.erase(Phi);
+    if (MemoryPhi *Phi = dyn_cast<MemoryPhi>(NewDef)) {
+      NonOptPhis.erase(Phi); }
 
     // If there is a local def after us, we only have to rename that.
     if (++DefIter != Defs->end()) {
@@ -520,8 +520,8 @@ void MemorySSAUpdater::fixupDefs(const SmallVectorImpl<WeakVH> &Vars) {
         else {
           // If we cycle, we should have ended up at a phi node that we already
           // processed.  FIXME: Double check this
-          if (!Seen.insert(S).second)
-            continue;
+          if (!Seen.insert(S).second) {
+            COVPOINT("MemorySSAUpdater524"); continue; }
           Worklist.push_back(S);
         }
       }
@@ -1344,8 +1344,8 @@ void MemorySSAUpdater::removeMemoryAccess(MemoryAccess *MA, bool OptimizePhis) {
       if (auto *MUD = dyn_cast<MemoryUseOrDef>(U.getUser()))
         MUD->resetOptimized();
       if (OptimizePhis)
-        if (MemoryPhi *MP = dyn_cast<MemoryPhi>(U.getUser()))
-          PhisToCheck.insert(MP);
+        if (MemoryPhi *MP = dyn_cast<MemoryPhi>(U.getUser())) {
+          COVPOINT("MemorySSAUpdater1348"); PhisToCheck.insert(MP); }
       U.set(NewDefTarget);
     }
   }
@@ -1359,7 +1359,7 @@ void MemorySSAUpdater::removeMemoryAccess(MemoryAccess *MA, bool OptimizePhis) {
   if (!PhisToCheck.empty()) {
     SmallVector<WeakVH, 16> PhisToOptimize{PhisToCheck.begin(),
                                            PhisToCheck.end()};
-    PhisToCheck.clear();
+    COVPOINT("MemorySSAUpdater1362"); PhisToCheck.clear();
 
     unsigned PhisSize = PhisToOptimize.size();
     while (PhisSize-- > 0)
@@ -1401,8 +1401,8 @@ void MemorySSAUpdater::removeBlocks(
 
 void MemorySSAUpdater::tryRemoveTrivialPhis(ArrayRef<WeakVH> UpdatedPHIs) {
   for (auto &VH : UpdatedPHIs)
-    if (auto *MPhi = cast_or_null<MemoryPhi>(VH))
-      tryRemoveTrivialPhi(MPhi);
+    if (auto *MPhi = cast_or_null<MemoryPhi>(VH)) {
+      COVPOINT("MemorySSAUpdater1405"); tryRemoveTrivialPhi(MPhi); }
 }
 
 void MemorySSAUpdater::changeToUnreachable(const Instruction *I) {

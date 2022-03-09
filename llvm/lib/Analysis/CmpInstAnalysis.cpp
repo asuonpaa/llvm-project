@@ -126,7 +126,7 @@ bool llvm::decomposeBitTestICmp(Value *LHS, Value *RHS,
     break;
   case ICmpInst::ICMP_UGE:
     // X >=u 2^n is equivalent to (X & ~(2^n-1)) != 0.
-    COVPOINT_ASSERT("CmpInstAnalysis129"); if (!C->isPowerOf2())
+    COVPOINT("CmpInstAnalysis129"); if (!C->isPowerOf2())
       return false;
     Mask = -*C;
     Pred = ICmpInst::ICMP_NE;

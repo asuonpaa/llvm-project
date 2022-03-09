@@ -1334,7 +1334,7 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
     // Add the values to V1Srcs
     for (Value *PV1 : PhiValueSet) {
       if (CheckForRecPhi(PV1)) {
-        COVPOINT_ASSERT("BasicAliasAnalysis1337"); continue; }
+        COVPOINT("BasicAliasAnalysis1337"); continue; }
       V1Srcs.push_back(PV1);
     }
   } else {

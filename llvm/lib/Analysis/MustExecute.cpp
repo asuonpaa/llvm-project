@@ -26,7 +26,7 @@
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Support/raw_ostream.h"
-
+#include "coverage_print.h"
 using namespace llvm;
 
 #define DEBUG_TYPE "must-execute"
@@ -129,8 +129,8 @@ static bool CanProveNotTakenFirstIteration(const BasicBlock *ExitBlock,
     return false;
   // If condition is constant and false leads to ExitBlock then we always
   // execute the true branch.
-  if (auto *Cond = dyn_cast<ConstantInt>(BI->getCondition()))
-    return BI->getSuccessor(Cond->getZExtValue() ? 1 : 0) == ExitBlock;
+  if (auto *Cond = dyn_cast<ConstantInt>(BI->getCondition())) {
+    COVPOINT_ASSERT("MustExecute133"); return BI->getSuccessor(Cond->getZExtValue() ? 1 : 0) == ExitBlock; }
   auto *Cond = dyn_cast<CmpInst>(BI->getCondition());
   if (!Cond)
     return false;
@@ -150,8 +150,8 @@ static bool CanProveNotTakenFirstIteration(const BasicBlock *ExitBlock,
   auto *SimpleCst = dyn_cast_or_null<Constant>(SimpleValOrNull);
   if (!SimpleCst)
     return false;
-  if (ExitBlock == BI->getSuccessor(0))
-    return SimpleCst->isZeroValue();
+  if (ExitBlock == BI->getSuccessor(0)) {
+    COVPOINT("MustExecute154"); return SimpleCst->isZeroValue(); }
   assert(ExitBlock == BI->getSuccessor(1) && "implied by above");
   return SimpleCst->isAllOnesValue();
 }

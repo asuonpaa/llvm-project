@@ -33,7 +33,7 @@
 #include "llvm/Pass.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/KnownBits.h"
-
+#include "coverage_print.h"
 using namespace llvm;
 using namespace llvm::PatternMatch;
 
@@ -1231,8 +1231,8 @@ bool InductionDescriptor::isInductionPHI(
 
   assert(PhiTy->isPointerTy() && "The PHI must be a pointer");
   // Pointer induction should be a constant.
-  if (!ConstStep)
-    return false;
+  if (!ConstStep) {
+    COVPOINT("IVDescriptors1235"); return false; }
 
   ConstantInt *CV = ConstStep->getValue();
   Type *PointerElementType = PhiTy->getPointerElementType();

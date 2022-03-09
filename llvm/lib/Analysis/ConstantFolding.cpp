@@ -2352,7 +2352,7 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
     case Intrinsic::minimum:
       // If one argument is undef, return the other argument.
       if (IsOp0Undef) {
-        COVPOINT_ASSERT("ConstantFolding2355"); return Operands[1]; }
+        COVPOINT("ConstantFolding2355"); return Operands[1]; }
       if (IsOp1Undef) {
         COVPOINT("ConstantFolding2356"); return Operands[0]; }
       break;

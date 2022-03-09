@@ -63,7 +63,7 @@
 //    pointer analysis.
 //
 //===----------------------------------------------------------------------===//
-
+#include "coverage_print.h"
 #include "llvm/Analysis/LegacyDivergenceAnalysis.h"
 #include "llvm/ADT/PostOrderIterator.h"
 #include "llvm/Analysis/CFG.h"

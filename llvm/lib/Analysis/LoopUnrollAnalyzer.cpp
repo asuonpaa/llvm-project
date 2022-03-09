@@ -14,7 +14,7 @@
 
 #include "llvm/Analysis/LoopUnrollAnalyzer.h"
 #include "llvm/Analysis/LoopInfo.h"
-
+#include "coverage_print.h"
 using namespace llvm;
 
 /// Try to simplify instruction \param I using its SCEV expression.
@@ -31,7 +31,7 @@ bool UnrolledInstAnalyzer::simplifyInstWithSCEV(Instruction *I) {
 
   const SCEV *S = SE.getSCEV(I);
   if (auto *SC = dyn_cast<SCEVConstant>(S)) {
-    SimplifiedValues[I] = SC->getValue();
+    COVPOINT("LoopUnrollAnalyzer34"); SimplifiedValues[I] = SC->getValue();
     return true;
   }
 
@@ -108,8 +108,8 @@ bool UnrolledInstAnalyzer::visitLoad(LoadInst &I) {
 
   ConstantDataSequential *CDS =
       dyn_cast<ConstantDataSequential>(GV->getInitializer());
-  if (!CDS)
-    return false;
+  if (!CDS) {
+    COVPOINT("LoopUnrollAnalyzer112"); return false; }
 
   // We might have a vector load from an array. FIXME: for now we just bail
   // out in this case, but we should be able to resolve and simplify such
@@ -137,7 +137,7 @@ bool UnrolledInstAnalyzer::visitLoad(LoadInst &I) {
   assert(CV && "Constant expected.");
   SimplifiedValues[&I] = CV;
 
-  return true;
+  COVPOINT_ASSERT("LoopUnrollAnalyzer140"); return true;
 }
 
 /// Try to simplify cast instruction.

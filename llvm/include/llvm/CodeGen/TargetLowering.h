@@ -1451,7 +1451,7 @@ public:
       return RegisterVT;
     }
     if (VT.isInteger()) {
-      COVPOINT_ASSERT("TargetLoweringH1454"); return getRegisterType(Context, getTypeToTransformTo(Context, VT));
+      COVPOINT("TargetLoweringH1454"); return getRegisterType(Context, getTypeToTransformTo(Context, VT));
     }
     llvm_unreachable("Unsupported extended type!");
   }
@@ -1477,7 +1477,7 @@ public:
       return getVectorTypeBreakdown(Context, VT, VT1, NumIntermediates, VT2);
     }
     if (VT.isInteger()) {
-      COVPOINT_ASSERT("TargetLoweringH1480"); unsigned BitWidth = VT.getSizeInBits();
+      COVPOINT("TargetLoweringH1480"); unsigned BitWidth = VT.getSizeInBits();
       unsigned RegWidth = getRegisterType(Context, VT).getSizeInBits();
       return (BitWidth + RegWidth - 1) / RegWidth;
     }

@@ -12,7 +12,7 @@
 // header node... not just a single natural loop.
 //
 //===----------------------------------------------------------------------===//
-
+#include "coverage_print.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/ADT/DepthFirstIterator.h"
 #include "llvm/ADT/ScopeExit.h"
@@ -105,10 +105,10 @@ bool Loop::makeLoopInvariant(Instruction *I, bool &Changed,
 
   // Hoist.
   I->moveBefore(InsertPt);
-  if (MSSAU)
-    if (auto *MUD = MSSAU->getMemorySSA()->getMemoryAccess(I))
+  if (MSSAU) {
+    COVPOINT("LoopInfo109"); if (auto *MUD = MSSAU->getMemorySSA()->getMemoryAccess(I))
       MSSAU->moveToPlace(MUD, InsertPt->getParent(),
-                         MemorySSA::BeforeTerminator);
+                         MemorySSA::BeforeTerminator);}
 
   // There is possibility of hoisting this instruction above some arbitrary
   // condition. Any metadata defined on it can be control dependent on this
@@ -508,8 +508,8 @@ MDNode *Loop::getLoopID() const {
 
     if (!LoopID)
       LoopID = MD;
-    else if (MD != LoopID)
-      return nullptr;
+    else if (MD != LoopID) {
+      COVPOINT("LoopInfo512"); return nullptr; }
   }
   if (!LoopID || LoopID->getNumOperands() == 0 ||
       LoopID->getOperand(0) != LoopID)
@@ -783,8 +783,8 @@ void UnloopUpdater::updateSubloopParents() {
     assert(SubloopParents.count(Subloop) && "DFS failed to visit subloop");
     if (Loop *Parent = SubloopParents[Subloop])
       Parent->addChildLoop(Subloop);
-    else
-      LI->addTopLevelLoop(Subloop);
+    else {
+      LI->addTopLevelLoop(Subloop); }
   }
 }
 
