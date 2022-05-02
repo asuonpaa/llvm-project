@@ -1749,7 +1749,7 @@ ScalarEvolution::getZeroExtendExpr(const SCEV *Op, Type *Ty, unsigned Depth) {
       }
 
       if (proveNoWrapByVaryingStart<SCEVZeroExtendExpr>(Start, Step, L)) {
-        COVPOINT_ASSERT("ScalarEvolution1752"); setNoWrapFlags(const_cast<SCEVAddRecExpr *>(AR), SCEV::FlagNUW);
+        COVPOINT("ScalarEvolution1752"); setNoWrapFlags(const_cast<SCEVAddRecExpr *>(AR), SCEV::FlagNUW);
         return getAddRecExpr(
             getExtendAddRecStart<SCEVZeroExtendExpr>(AR, Ty, this, Depth + 1),
             getZeroExtendExpr(Step, Ty, Depth + 1), L, AR->getNoWrapFlags());
@@ -3504,7 +3504,7 @@ const SCEV *ScalarEvolution::getAbsExpr(const SCEV *Op, bool IsNSW) {
 }
 
 const SCEV *ScalarEvolution::getSignumExpr(const SCEV *Op) {
-  COVPOINT_ASSERT("ScalarEvolution3507"); Type *Ty = Op->getType();
+  COVPOINT("ScalarEvolution3507"); Type *Ty = Op->getType();
   return getSMinExpr(getSMaxExpr(Op, getMinusOne(Ty)), getOne(Ty));
 }
 
@@ -3541,7 +3541,7 @@ const SCEV *ScalarEvolution::getMinMaxExpr(SCEVTypes Kind,
       else if (Kind == scSMinExpr)
         return APIntOps::smin(LHS, RHS);
       else if (Kind == scUMaxExpr) {
-        COVPOINT_ASSERT("ScalarEvolution3544"); return APIntOps::umax(LHS, RHS); }
+        COVPOINT("ScalarEvolution3544"); return APIntOps::umax(LHS, RHS); }
       else if (Kind == scUMinExpr)
         return APIntOps::umin(LHS, RHS);
       llvm_unreachable("Unknown SCEV min/max opcode");
@@ -5175,9 +5175,9 @@ const SCEV *ScalarEvolution::createAddRecFromPHI(PHINode *PN) {
         if (auto BO = MatchBinaryOp(BEValueV, DT)) {
           if (BO->Opcode == Instruction::Add && BO->LHS == PN) {
             if (BO->IsNUW) {
-              COVPOINT_ASSERT("ScalarEvolution5178"); Flags = setFlags(Flags, SCEV::FlagNUW); }
+              COVPOINT("ScalarEvolution5178"); Flags = setFlags(Flags, SCEV::FlagNUW); }
             if (BO->IsNSW) {
-              COVPOINT_ASSERT("ScalarEvolution5180"); Flags = setFlags(Flags, SCEV::FlagNSW); }
+              COVPOINT("ScalarEvolution5180"); Flags = setFlags(Flags, SCEV::FlagNSW); }
           }
         } else if (GEPOperator *GEP = dyn_cast<GEPOperator>(BEValueV)) {
           // If the increment is an inbounds GEP, then we know the address
@@ -5501,7 +5501,7 @@ const SCEV *ScalarEvolution::createNodeForSelectOrPHI(Instruction *I,
       const SCEV *LDiff = getMinusSCEV(LA, LS);
       const SCEV *RDiff = getMinusSCEV(RA, One);
       if (LDiff == RDiff) {
-        COVPOINT_ASSERT("ScalarEvolution5504"); return getAddExpr(getUMaxExpr(One, LS), LDiff); }
+        COVPOINT("ScalarEvolution5504"); return getAddExpr(getUMaxExpr(One, LS), LDiff); }
     }
     break;
   case ICmpInst::ICMP_EQ:
@@ -5669,7 +5669,7 @@ getRangeForUnknownRecurrence(const SCEVUnknown *U) {
   // and this leads to false-positive recurrence test.
   for (auto *Pred : predecessors(P->getParent()))
     if (!DT.isReachableFromEntry(Pred)) {
-      COVPOINT_ASSERT("ScalarEvolution5672"); return CR; }
+      COVPOINT("ScalarEvolution5672"); return CR; }
 
   BinaryOperator *BO;
   Value *Start, *Step;
@@ -6226,7 +6226,7 @@ ConstantRange ScalarEvolution::getRangeViaFactoring(const SCEV *Start,
           FalseValue = FalseValue.zext(BitWidth);
           break;
         case scSignExtend:
-          COVPOINT_ASSERT("ScalarEvolution6229"); TrueValue = TrueValue.sext(BitWidth);
+          COVPOINT("ScalarEvolution6229"); TrueValue = TrueValue.sext(BitWidth);
           FalseValue = FalseValue.sext(BitWidth);
           break;
         }
@@ -6334,7 +6334,7 @@ bool ScalarEvolution::isSCEVExprNeverPoison(const Instruction *I) {
         if (OtherOpIndex != OpIndex) {
           const SCEV *OtherOp = getSCEV(I->getOperand(OtherOpIndex));
           if (!isLoopInvariant(OtherOp, AddRec->getLoop())) {
-            COVPOINT_ASSERT("ScalarEvolution6337"); AllOtherOpsLoopInvariant = false;
+            COVPOINT("ScalarEvolution6337"); AllOtherOpsLoopInvariant = false;
             break;
           }
         }
@@ -6748,7 +6748,7 @@ const SCEV *ScalarEvolution::createSCEV(Value *V) {
       if (BO->IsExact) {
         // Given exact arithmetic in-bounds right-shift by a constant,
         // we can lower it into:  (abs(x) EXACT/u (1<<C)) * signum(x)
-        COVPOINT_ASSERT("ScalarEvolution6751"); const SCEV *X = getSCEV(BO->LHS);
+        COVPOINT("ScalarEvolution6751"); const SCEV *X = getSCEV(BO->LHS);
         const SCEV *AbsX = getAbsExpr(X, /*IsNSW=*/false);
         APInt Mult = APInt::getOneBitSet(BitWidth, AShrAmt);
         const SCEV *Div = getUDivExactExpr(AbsX, getConstant(Mult));
@@ -7751,7 +7751,7 @@ ScalarEvolution::computeExitLimitFromCondFromBinOp(
   // to not.
   if (isa<SCEVCouldNotCompute>(MaxBECount) &&
       !isa<SCEVCouldNotCompute>(BECount)) {
-    COVPOINT_ASSERT("ScalarEvolution7754"); MaxBECount = getConstant(getUnsignedRangeMax(BECount)); }
+    COVPOINT("ScalarEvolution7754"); MaxBECount = getConstant(getUnsignedRangeMax(BECount)); }
 
   return ExitLimit(BECount, MaxBECount, false,
                    { &EL0.Predicates, &EL1.Predicates });
@@ -7914,7 +7914,7 @@ ScalarEvolution::computeLoadConstantCompareExitLimit(
     return getCouldNotCompute();
 
   // Okay, we allow one non-constant index into the GEP instruction.
-  COVPOINT_ASSERT("ScalarEvolution7917"); Value *VarIdx = nullptr;
+  COVPOINT("ScalarEvolution7917"); Value *VarIdx = nullptr;
   std::vector<Constant*> Indexes;
   unsigned VarIdxNum = 0;
   for (unsigned i = 2, e = GEP->getNumOperands(); i != e; ++i)
@@ -8716,7 +8716,7 @@ const SCEV *ScalarEvolution::computeSCEVAtScope(const SCEV *V, const Loop *L) {
     const SCEV *RHS = getSCEVAtScope(Div->getRHS(), L);
     if (LHS == Div->getLHS() && RHS == Div->getRHS())
       return Div;   // must be loop invariant
-    COVPOINT_ASSERT("ScalarEvolution8719"); return getUDivExpr(LHS, RHS);
+    COVPOINT("ScalarEvolution8719"); return getUDivExpr(LHS, RHS);
   }
 
   // If this is a loop recurrence for a loop that does not contain L, then we
@@ -9267,7 +9267,7 @@ ScalarEvolution::howFarToNonZero(const SCEV *V, const Loop *L) {
   if (const SCEVConstant *C = dyn_cast<SCEVConstant>(V)) {
     if (!C->getValue()->isZero())
       return getZero(C->getType());
-    COVPOINT_ASSERT("ScalarEvolution9270"); return getCouldNotCompute();  // Otherwise it will loop infinitely.
+    COVPOINT("ScalarEvolution9270"); return getCouldNotCompute();  // Otherwise it will loop infinitely.
   }
 
   // We could implement others, but I really doubt anyone writes loops like
@@ -9823,7 +9823,7 @@ ScalarEvolution::getLoopInvariantExitCondDuringFirstIterations(
   // that there is no wrap during the iteration. To prove that there is no
   // signed/unsigned wrap, we need to check that
   // Start <= Last for step = 1 or Start >= Last for step = -1.
-  COVPOINT_ASSERT("ScalarEvolution9826"); ICmpInst::Predicate NoOverflowPred =
+  COVPOINT("ScalarEvolution9826"); ICmpInst::Predicate NoOverflowPred =
       CmpInst::isSigned(Pred) ? ICmpInst::ICMP_SLE : ICmpInst::ICMP_ULE;
   if (Step == MinusOne)
     NoOverflowPred = CmpInst::getSwappedPredicate(NoOverflowPred);
@@ -9910,7 +9910,7 @@ bool ScalarEvolution::isKnownPredicateViaNoOverflow(ICmpInst::Predicate Pred,
     // X s< (X + C)<nsw> if C > 0
     if (MatchBinaryAddToConst(RHS, LHS, C, SCEV::FlagNSW) &&
         C.isStrictlyPositive()) {
-      COVPOINT_ASSERT("ScalarEvolution9913"); return true; }
+      COVPOINT("ScalarEvolution9913"); return true; }
 
     // (X + C)<nsw> s< X if C < 0
     if (MatchBinaryAddToConst(LHS, RHS, C, SCEV::FlagNSW) && C.isNegative()) {
@@ -10455,7 +10455,7 @@ bool ScalarEvolution::isImpliedCondBalancedTypes(
   if (FoundPred == ICmpInst::ICMP_EQ)
     if (ICmpInst::isTrueWhenEqual(Pred))
       if (isImpliedCondOperands(Pred, LHS, RHS, FoundLHS, FoundRHS, Context)) {
-        COVPOINT_ASSERT("ScalarEvolution10458"); return true; }
+        COVPOINT("ScalarEvolution10458"); return true; }
   if (Pred == ICmpInst::ICMP_NE)
     if (!ICmpInst::isTrueWhenEqual(FoundPred))
       if (isImpliedCondOperands(FoundPred, LHS, RHS, FoundLHS, FoundRHS,
@@ -12545,7 +12545,7 @@ ScalarEvolution::computeBlockDisposition(const SCEV *S, const BasicBlock *BB) {
     const SCEV *LHS = UDiv->getLHS(), *RHS = UDiv->getRHS();
     BlockDisposition LD = getBlockDisposition(LHS, BB);
     if (LD == DoesNotDominateBlock) {
-      COVPOINT_ASSERT("ScalarEvolution12548"); return DoesNotDominateBlock; }
+      COVPOINT("ScalarEvolution12548"); return DoesNotDominateBlock; }
     BlockDisposition RD = getBlockDisposition(RHS, BB);
     if (RD == DoesNotDominateBlock)
       return DoesNotDominateBlock;
@@ -13428,7 +13428,7 @@ const SCEV *ScalarEvolution::applyLoopGuards(const SCEV *Expr, const Loop *L) {
     }
     case CmpInst::ICMP_ULE: {
       if (!containsAddRecurrence(RHS)) {
-        COVPOINT_ASSERT("ScalarEvolution13431"); const SCEV *Base = LHS;
+        COVPOINT("ScalarEvolution13431"); const SCEV *Base = LHS;
         auto I = RewriteMap.find(LHSUnknown->getValue());
         if (I != RewriteMap.end())
           Base = I->second;

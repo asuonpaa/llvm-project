@@ -2491,7 +2491,7 @@ static Constant *ConstantFoldScalarCall2(StringRef Name,
     default: break;
     case Intrinsic::smax:
       if (!C0 && !C1) {
-        COVPOINT_ASSERT("ConstantFolding2494"); return UndefValue::get(Ty); }
+        COVPOINT("ConstantFolding2494"); return UndefValue::get(Ty); }
       if (!C0 || !C1) {
         COVPOINT("ConstantFolding2496"); return ConstantInt::get(Ty, APInt::getSignedMaxValue(BitWidth)); }
       return ConstantInt::get(Ty, C0->sgt(*C1) ? *C0 : *C1);

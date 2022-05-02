@@ -283,7 +283,7 @@ void MemorySSAUpdater::insertUse(MemoryUse *MU, bool RenameUses) {
     // become the phi anyway, so it does not matter what we pass.
     for (auto &MP : InsertedPHIs)
       if (MemoryPhi *Phi = cast_or_null<MemoryPhi>(MP)) {
-        COVPOINT_ASSERT("MemorySSAUpdater286"); MSSA->renamePass(Phi->getBlock(), nullptr, Visited); }
+        COVPOINT("MemorySSAUpdater286"); MSSA->renamePass(Phi->getBlock(), nullptr, Visited); }
   }
 }
 

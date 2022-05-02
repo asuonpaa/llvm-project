@@ -1302,7 +1302,7 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
         else
           Alias = ThisAlias;
         if (*Alias == AliasResult::MayAlias) {
-          COVPOINT_ASSERT("BasicAliasAnalysis1305"); break; }
+          COVPOINT("BasicAliasAnalysis1305"); break; }
       }
       return *Alias;
     }
@@ -1564,7 +1564,7 @@ AliasResult BasicAAResult::aliasCheck(const Value *V1, LocationSize V1Size,
   bool AssumptionDisproven =
       Entry.NumAssumptionUses > 0 && Result != AliasResult::NoAlias;
   if (AssumptionDisproven) {
-    COVPOINT_ASSERT("BasicAliasAnalysis1567"); Result = AliasResult::MayAlias; }
+    COVPOINT("BasicAliasAnalysis1567"); Result = AliasResult::MayAlias; }
 
   // This is a definitive result now, when considered as a root query.
   AAQI.NumAssumptionUses -= Entry.NumAssumptionUses;
@@ -1577,7 +1577,7 @@ AliasResult BasicAAResult::aliasCheck(const Value *V1, LocationSize V1Size,
   // been based on this assumption. Do this after the Entry updates above to
   // avoid iterator invalidation.
   if (AssumptionDisproven) {
-    COVPOINT_ASSERT("BasicAliasAnalysis1580"); while (AAQI.AssumptionBasedResults.size() > OrigNumAssumptionBasedResults)
+    COVPOINT("BasicAliasAnalysis1580"); while (AAQI.AssumptionBasedResults.size() > OrigNumAssumptionBasedResults)
       AAQI.AliasCache.erase(AAQI.AssumptionBasedResults.pop_back_val()); }
 
   // The result may still be based on assumptions higher up in the chain.

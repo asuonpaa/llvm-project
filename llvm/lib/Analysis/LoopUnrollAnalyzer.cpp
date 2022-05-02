@@ -137,7 +137,7 @@ bool UnrolledInstAnalyzer::visitLoad(LoadInst &I) {
   assert(CV && "Constant expected.");
   SimplifiedValues[&I] = CV;
 
-  COVPOINT_ASSERT("LoopUnrollAnalyzer140"); return true;
+  COVPOINT("LoopUnrollAnalyzer140"); return true;
 }
 
 /// Try to simplify cast instruction.
